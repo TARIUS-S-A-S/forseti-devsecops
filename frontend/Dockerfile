@@ -10,12 +10,13 @@ COPY . ./
 ENV NODE_ENV=production
 RUN npm run build
 
-# Stage 2: serve estático con Nginx mínimo
-FROM nginx:alpine AS runtime
+# Stage 2: serve estático con Nginx unprivileged (corre como uid 101, sin root)
+FROM nginxinc/nginx-unprivileged:alpine AS runtime
 
-# Config Nginx para SPA (catch-all → index.html)
+USER root
+# Config Nginx para SPA (catch-all → index.html) — puerto 8080 (non-privileged)
 RUN echo 'server { \
-    listen 80; \
+    listen 8080; \
     server_name _; \
     root /usr/share/nginx/html; \
     index index.html; \
@@ -26,7 +27,9 @@ RUN echo 'server { \
 }' > /etc/nginx/conf.d/default.conf
 
 COPY --from=build /build/dist /usr/share/nginx/html
+RUN chown -R nginx:nginx /usr/share/nginx/html
+USER nginx
 
-EXPOSE 80
+EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD wget -qO- http://localhost/ > /dev/null || exit 1
+    CMD wget -qO- http://localhost:8080/ > /dev/null || exit 1
