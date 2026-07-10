@@ -24,8 +24,21 @@ backend:
     SERVER_PORT: "8080"
     POSTGRES_HOST: forseti-postgres
     POSTGRES_PORT: "5432"
-    POSTGRES_DB: forseti
+    POSTGRES_DB: forseti_prod
     FORSETI_BASE_URL: http://forseti.local
+    # Correo (Mailpit local — no autenticado)
+    BREVO_SMTP_HOST: mailpit
+    BREVO_SMTP_PORT: "1025"
+    BREVO_SMTP_USER: ""
+    BREVO_SMTP_PASSWORD: ""
+    BREVO_API_KEY: disabled
+    MAIL_FROM_NAME: "Forseti (demo)"
+    MAIL_FROM_ADDRESS: "no-reply@forseti.demo"
+    # R2 backups desactivados en demo
+    R2_ACCESS_KEY_ID: ""
+    R2_SECRET_ACCESS_KEY: ""
+    R2_ENDPOINT: ""
+    R2_BUCKET: ""
 
 frontend:
   replicas: 1
