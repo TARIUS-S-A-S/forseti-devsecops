@@ -1,0 +1,32 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-run-as-non-root
+  annotations:
+    policies.kyverno.io/title: Exigir runAsNonRoot
+    policies.kyverno.io/category: Pod Security Standards
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      Todo container debe correr como usuario no-root para reducir superficie
+      en caso de escape.
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: check-runasnonroot
+      match:
+        any:
+          - resources:
+              kinds: [Pod]
+              namespaces: [forseti, forseti-staging, forseti-prod]
+      validate:
+        message: "runAsNonRoot debe ser true en pod o container securityContext."
+        anyPattern:
+          - spec:
+              securityContext:
+                runAsNonRoot: "true"
+          - spec:
+              containers:
+                - name: "?*"
+                  securityContext:
+                    runAsNonRoot: "true"

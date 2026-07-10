@@ -1,0 +1,42 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: verify-forseti-image-signatures
+  annotations:
+    policies.kyverno.io/title: Verificar firmas Cosign
+    policies.kyverno.io/category: Supply Chain Security
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      Exige que TODA imagen de Forseti desplegada esté firmada con Cosign
+      por Jenkins (subject email jenkins@tarius.ec) o por GitHub Actions
+      (OIDC identity del repo TARIUS-S-A-S/forseti-devsecops).
+spec:
+  validationFailureAction: Enforce
+  webhookTimeoutSeconds: 30
+  failurePolicy: Fail
+  rules:
+    - name: verify-signature
+      match:
+        any:
+          - resources:
+              kinds: [Pod]
+              namespaces:
+                - forseti
+                - forseti-staging
+                - forseti-prod
+      verifyImages:
+        - imageReferences:
+            - "ghcr.io/tarius-s-a-s/forseti-devsecops/*"
+          attestors:
+            - entries:
+                # Firma Jenkins con key propia
+                - keys:
+                    publicKeys: |-
+                      -----BEGIN PUBLIC KEY-----
+                      # Reemplazar tras ejecutar: cosign generate-key-pair
+                      # y subir cosign.pub a este policy
+                      -----END PUBLIC KEY-----
+                # Firma GH Actions (keyless / OIDC)
+                - keyless:
+                    subject: "https://github.com/TARIUS-S-A-S/forseti-devsecops/*"
+                    issuer: "https://token.actions.githubusercontent.com"

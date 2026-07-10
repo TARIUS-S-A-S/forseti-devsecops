@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 140" role="img" aria-label="Forseti.">
+  <title>Forseti. — sobre fondos oscuros</title>
+  <style>
+    .wm { font-family: 'Lora', Georgia, 'Times New Roman', serif; font-weight: 700; font-size: 120px; letter-spacing: -1px; }
+  </style>
+  <text x="20" y="108" class="wm" fill="#FFFFFF">Forseti</text>
+  <text x="445" y="108" class="wm" fill="#FED7AA">.</text>
+</svg>

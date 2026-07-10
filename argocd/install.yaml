@@ -1,0 +1,13 @@
+# Instalación de Argo CD en el cluster kind.
+# Uso:
+#   kubectl create namespace argocd
+#   kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+#   # Ver password inicial:
+#   kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d ; echo
+#   # Port-forward:
+#   kubectl -n argocd port-forward svc/argocd-server 8080:443
+#   # Login CLI:
+#   argocd login localhost:8080 --username admin --password <pwd> --insecure
+
+# Este archivo queda como memo de comandos.
+# Los manifests reales se descargan del upstream oficial.

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 1080" role="img" aria-label="Forseti — un producto de TARIUS">
+  <title>Forseti — lockup vertical</title>
+  <style>
+    .wm  { font-family: 'Lora', Georgia, serif; font-weight: 700; font-size: 200px; letter-spacing: -2px; }
+    .end { font-family: 'Inter', sans-serif; font-style: italic; font-weight: 300; font-size: 30px; letter-spacing: 0.4px; }
+    .end-b { font-family: 'Inter', sans-serif; font-style: normal; font-weight: 600; }
+  </style>
+  <!-- Símbolo centrado arriba (escala 4.4x) -->
+  <g transform="translate(240, 80) scale(4.4)">
+    <path d="M 50 18 L 78 62 L 22 62 Z" fill="#0F172A" stroke="#0F172A" stroke-width="6" stroke-linejoin="round"/>
+    <path d="M 50 82 L 22 38 L 78 38 Z" fill="#FB923C" stroke="#FB923C" stroke-width="6" stroke-linejoin="round" opacity="0.95"/>
+  </g>
+  <text x="460" y="660" class="wm" fill="#0F172A" text-anchor="middle">
+    <tspan>Forseti</tspan><tspan fill="#FB923C">.</tspan>
+  </text>
+  <text x="460" y="960" class="end" fill="#94A3B8" text-anchor="middle">
+    un producto de <tspan class="end-b" fill="#0F2A43">TARIUS</tspan><tspan class="end-b" fill="#D97706">.</tspan>
+  </text>
+</svg>

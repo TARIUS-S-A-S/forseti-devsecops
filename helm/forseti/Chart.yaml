@@ -1,0 +1,15 @@
+apiVersion: v2
+name: forseti
+description: Forseti — SaaS de facturación electrónica SRI (Ecuador) — Helm chart demo DevSecOps
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+keywords:
+  - forseti
+  - sri
+  - facturacion-electronica
+  - ecuador
+  - devsecops
+maintainers:
+  - name: Hernán Jurado (TARIUS S.A.S)
+    email: hernan.jurado@tarius.ec

@@ -1,0 +1,42 @@
+# Perfil STAGING — staging en VPS Vultr Miami (mismo VPS que prod, BD distinta, SRI sandbox)
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+    hikari:
+      maximum-pool-size: 4
+      minimum-idle: 1
+  mail:
+    host: ${BREVO_SMTP_HOST:smtp-relay.brevo.com}
+    port: ${BREVO_SMTP_PORT:587}
+    username: ${BREVO_SMTP_USER}
+    password: ${BREVO_SMTP_PASSWORD}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+
+forseti:
+  sri:
+    endpoint:
+      recepcion: ${SRI_PRUEBAS_RECEPCION}
+      autorizacion: ${SRI_PRUEBAS_AUTORIZACION}
+    cert:
+      path: ${SRI_CERT_PATH}
+      password: ${SRI_CERT_PASSWORD}
+  brevo:
+    api-key: ${BREVO_API_KEY}
+    sender:
+      name: "Forseti (staging)"
+      email: ${MAIL_FROM_ADDRESS}
+  r2:
+    enabled: true
+    access-key-id: ${R2_ACCESS_KEY_ID}
+    secret-access-key: ${R2_SECRET_ACCESS_KEY}
+    endpoint: ${R2_ENDPOINT}
+    bucket: ${R2_BUCKET}
+
+logging:
+  level:
+    root: INFO
+    ec.tarius.forseti: DEBUG

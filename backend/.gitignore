@@ -1,0 +1,45 @@
+# Build
+target/
+*.jar
+*.war
+*.class
+.mvn/wrapper/maven-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.project
+.classpath
+.settings/
+.factorypath
+
+# Logs
+logs/
+*.log
+
+# Secrets — NUNCA commitear
+.env
+.env.local
+.env.*.local
+!.env.example
+*.p12
+*.pfx
+*.pem
+*.key
+secret*.yml
+secret*.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Dev local
+/dev-cert/
+docker-compose.override.yml
+
+# Coverage
+coverage/
+jacoco.exec

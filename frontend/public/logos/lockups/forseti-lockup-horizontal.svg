@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1240 360" role="img" aria-label="Forseti — un producto de TARIUS">
+  <title>Forseti — lockup horizontal</title>
+  <desc>Triángulos en equilibrio + wordmark Lora con punto mandarina + endorsement TARIUS</desc>
+  <style>
+    .wm  { font-family: 'Lora', Georgia, serif; font-weight: 700; font-size: 200px; letter-spacing: -2px; }
+    .end { font-family: 'Inter', sans-serif; font-style: italic; font-weight: 300; font-size: 28px; letter-spacing: 0.4px; }
+    .end-b { font-family: 'Inter', sans-serif; font-style: normal; font-weight: 600; }
+  </style>
+  <!-- Símbolo (escala 3x desde viewBox 100) -->
+  <g transform="translate(40, 60) scale(3)">
+    <path d="M 50 18 L 78 62 L 22 62 Z" fill="#0F172A" stroke="#0F172A" stroke-width="6" stroke-linejoin="round"/>
+    <path d="M 50 82 L 22 38 L 78 38 Z" fill="#FB923C" stroke="#FB923C" stroke-width="6" stroke-linejoin="round" opacity="0.95"/>
+  </g>
+  <!-- Wordmark -->
+  <text x="380" y="218" class="wm" fill="#0F172A">Forseti</text>
+  <text x="1083" y="218" class="wm" fill="#FB923C">.</text>
+  <!-- Endorsement -->
+  <text x="382" y="290" class="end" fill="#94A3B8">un producto de </text>
+  <text x="608" y="290" class="end end-b" fill="#0F2A43">TARIUS</text>
+  <text x="755" y="290" class="end end-b" fill="#D97706">.</text>
+</svg>

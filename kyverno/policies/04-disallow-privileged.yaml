@@ -1,0 +1,32 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: disallow-privileged-containers
+  annotations:
+    policies.kyverno.io/title: Prohibir containers privilegiados
+    policies.kyverno.io/category: Pod Security Standards
+    policies.kyverno.io/severity: high
+    policies.kyverno.io/description: >-
+      Baseline PSS: bloquea privileged=true, hostNetwork, hostPID, hostIPC.
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: block-privileged
+      match:
+        any:
+          - resources:
+              kinds: [Pod]
+              namespaces: [forseti, forseti-staging, forseti-prod]
+      validate:
+        message: "Containers privilegiados no permitidos."
+        pattern:
+          spec:
+            =(hostPID): "false"
+            =(hostIPC): "false"
+            =(hostNetwork): "false"
+            containers:
+              - name: "?*"
+                =(securityContext):
+                  =(privileged): "false"
+                  =(allowPrivilegeEscalation): "false"

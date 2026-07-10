@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="Forseti">
+  <title>Forseti — principal sobre fondos claros</title>
+  <path d="M 50 18 L 78 62 L 22 62 Z" fill="#0F172A" stroke="#0F172A" stroke-width="6" stroke-linejoin="round"/>
+  <path d="M 50 82 L 22 38 L 78 38 Z" fill="#FB923C" stroke="#FB923C" stroke-width="6" stroke-linejoin="round" opacity="0.95"/>
+</svg>

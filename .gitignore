@@ -1,0 +1,50 @@
+# ─── Secretos (NUNCA commitear) ───────────────────────────────────────
+.env
+.env.local
+.env.production
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+secrets/
+!secrets/.gitkeep
+
+# ─── Build artifacts ──────────────────────────────────────────────────
+backend/target/
+frontend/dist/
+frontend/node_modules/
+frontend/playwright-report/
+frontend/test-results/
+
+# ─── IDE ──────────────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.iml
+
+# ─── OS ───────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ─── Logs ─────────────────────────────────────────────────────────────
+*.log
+logs/
+
+# ─── Reportes de seguridad (generados por pipeline) ──────────────────
+reports/
+!reports/.gitkeep
+*.sarif
+zap-report*.html
+zap-report*.md
+trivy-report*.json
+sbom*.json
+sbom*.spdx.json
+
+# ─── Argo CD / kubectl locales ────────────────────────────────────────
+kubeconfig
+kubeconfig-*
+argocd-initial-password.txt
+
+# ─── Jenkins ──────────────────────────────────────────────────────────
+jenkins/data/
+jenkins_home/

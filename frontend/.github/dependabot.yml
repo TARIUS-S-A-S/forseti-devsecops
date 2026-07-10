@@ -1,0 +1,31 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "America/Guayaquil"
+    open-pull-requests-limit: 5
+    target-branch: "dev"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    groups:
+      vue:
+        patterns: ["vue", "vue-router", "pinia", "@vueuse/*", "@vitejs/*"]
+      primevue:
+        patterns: ["primevue", "@primevue/*", "primeicons"]
+      eslint:
+        patterns: ["eslint*", "@typescript-eslint/*"]
+      testing:
+        patterns: ["vitest", "@vue/test-utils", "@playwright/*", "jsdom"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    target-branch: "dev"
+    commit-message:
+      prefix: "ci"

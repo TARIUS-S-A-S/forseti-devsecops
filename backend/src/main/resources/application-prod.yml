@@ -1,0 +1,51 @@
+# Perfil PROD — producción en VPS Vultr Miami
+# Secrets vienen por variables de entorno (Docker Compose lee /etc/forseti/*.env)
+
+spring:
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:postgres}:${POSTGRES_PORT:5432}/${POSTGRES_DB}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+    hikari:
+      maximum-pool-size: 4   # FIX #24: reducido para 1GB VPS
+      minimum-idle: 1
+      connection-timeout: 30000
+      idle-timeout: 600000
+      leak-detection-threshold: 30000
+  flyway:
+    baseline-on-migrate: false   # PROD: NO baselinear → detecta drift
+    validate-on-migrate: true
+  mail:
+    host: ${BREVO_SMTP_HOST:smtp-relay.brevo.com}
+    port: ${BREVO_SMTP_PORT:587}
+    username: ${BREVO_SMTP_USER}
+    password: ${BREVO_SMTP_PASSWORD}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+      mail.smtp.starttls.required: true
+
+forseti:
+  sri:
+    endpoint:
+      recepcion: ${SRI_PROD_RECEPCION}
+      autorizacion: ${SRI_PROD_AUTORIZACION}
+    cert:
+      path: ${SRI_CERT_PATH}
+      password: ${SRI_CERT_PASSWORD}
+  brevo:
+    api-key: ${BREVO_API_KEY}
+    sender:
+      name: ${MAIL_FROM_NAME:Forseti}
+      email: ${MAIL_FROM_ADDRESS}
+  r2:
+    enabled: true
+    access-key-id: ${R2_ACCESS_KEY_ID}
+    secret-access-key: ${R2_SECRET_ACCESS_KEY}
+    endpoint: ${R2_ENDPOINT}
+    bucket: ${R2_BUCKET}
+
+logging:
+  level:
+    root: INFO
+    ec.tarius.forseti: INFO

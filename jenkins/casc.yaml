@@ -1,0 +1,44 @@
+# Jenkins Configuration as Code — Forseti DevSecOps
+# Ver: https://plugins.jenkins.io/configuration-as-code/
+
+jenkins:
+  systemMessage: "Forseti DevSecOps — Jenkins CD pipeline"
+  numExecutors: 2
+  mode: NORMAL
+
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: admin
+          password: "${JENKINS_ADMIN_PASSWORD:-forseti-admin}"
+
+  authorizationStrategy:
+    loggedInUsersCanDoAnything:
+      allowAnonymousRead: false
+
+unclassified:
+  location:
+    url: http://localhost:8090/
+
+jobs:
+  - script: |
+      pipelineJob('forseti-devsecops-pipeline') {
+        description('Pipeline principal: build → Trivy → Syft → Cosign → ZAP → GitOps commit')
+        definition {
+          cpsScm {
+            scm {
+              git {
+                remote {
+                  url('https://github.com/TARIUS-S-A-S/forseti-devsecops.git')
+                }
+                branch('*/main')
+              }
+            }
+            scriptPath('jenkins/Jenkinsfile')
+          }
+        }
+        triggers {
+          scm('H/5 * * * *')  // poll cada 5 min
+        }
+      }

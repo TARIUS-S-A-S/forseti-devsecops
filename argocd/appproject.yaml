@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: forseti
+  namespace: argocd
+spec:
+  description: Forseti — Facturación electrónica SRI (Ecuador)
+  sourceRepos:
+    - https://github.com/TARIUS-S-A-S/forseti-devsecops.git
+    - https://github.com/TARIUS-S-A-S/forseti-devsecops-gitops.git
+  destinations:
+    - namespace: forseti
+      server: https://kubernetes.default.svc
+    - namespace: forseti-staging
+      server: https://kubernetes.default.svc
+    - namespace: forseti-prod
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: ''
+      kind: Namespace
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
+  orphanedResources:
+    warn: true
+  roles:
+    - name: read-only
+      description: Solo lectura
+      policies:
+        - p, proj:forseti:read-only, applications, get, forseti/*, allow
+    - name: dev
+      description: Desarrolladores — sync manual staging
+      policies:
+        - p, proj:forseti:dev, applications, sync, forseti/*-staging, allow

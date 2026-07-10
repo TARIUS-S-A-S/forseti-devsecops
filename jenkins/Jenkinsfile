@@ -1,0 +1,258 @@
+// ─────────────────────────────────────────────────────────────────────
+// Forseti DevSecOps — Pipeline maestro Jenkins
+// ─────────────────────────────────────────────────────────────────────
+// Este pipeline corre DESPUÉS del CI de GitHub Actions.
+// Complementa (no duplica): GH Actions da feedback rápido en PR;
+// Jenkins es el "release engineer" que corre las etapas pesadas de
+// compliance / seguridad supply-chain y promueve al repo GitOps.
+// ─────────────────────────────────────────────────────────────────────
+
+pipeline {
+
+  agent any
+
+  environment {
+    REGISTRY          = 'ghcr.io'
+    REPO              = 'tarius-s-a-s/forseti-devsecops'
+    IMAGE_BACKEND     = "${REGISTRY}/${REPO}/backend"
+    IMAGE_FRONTEND    = "${REGISTRY}/${REPO}/frontend"
+    TAG               = "sha-${env.GIT_COMMIT?.take(7) ?: 'local'}"
+    KUBECONFIG        = "${env.WORKSPACE}/.kube/config"
+    TRIVY_SEVERITY    = 'CRITICAL,HIGH'
+    ZAP_TARGET        = 'http://forseti-frontend.forseti-staging.svc.cluster.local'
+  }
+
+  options {
+    ansiColor('xterm')
+    timestamps()
+    timeout(time: 45, unit: 'MINUTES')
+    buildDiscarder(logRotator(numToKeepStr: '20'))
+  }
+
+  stages {
+
+    stage('Checkout') {
+      steps {
+        checkout scm
+        sh 'echo "Building commit: $(git rev-parse --short HEAD)"'
+      }
+    }
+
+    stage('Build imágenes Docker') {
+      parallel {
+        stage('Backend') {
+          steps {
+            sh """
+              docker build \
+                --label org.opencontainers.image.revision=${env.GIT_COMMIT} \
+                --label org.opencontainers.image.source=https://github.com/${REPO} \
+                -t ${IMAGE_BACKEND}:${TAG} \
+                -t ${IMAGE_BACKEND}:latest \
+                ./backend
+            """
+          }
+        }
+        stage('Frontend') {
+          steps {
+            sh """
+              docker build \
+                --label org.opencontainers.image.revision=${env.GIT_COMMIT} \
+                --label org.opencontainers.image.source=https://github.com/${REPO} \
+                -t ${IMAGE_FRONTEND}:${TAG} \
+                -t ${IMAGE_FRONTEND}:latest \
+                ./frontend
+            """
+          }
+        }
+      }
+    }
+
+    stage('Trivy — Scan CVEs (imagen)') {
+      parallel {
+        stage('Backend') {
+          steps {
+            sh """
+              trivy image \
+                --severity ${TRIVY_SEVERITY} \
+                --format table \
+                --exit-code 0 \
+                --ignore-unfixed \
+                ${IMAGE_BACKEND}:${TAG} | tee trivy-backend.txt
+
+              trivy image \
+                --severity ${TRIVY_SEVERITY} \
+                --format sarif \
+                --output trivy-backend.sarif \
+                ${IMAGE_BACKEND}:${TAG}
+            """
+            archiveArtifacts artifacts: 'trivy-backend.*', fingerprint: true
+          }
+        }
+        stage('Frontend') {
+          steps {
+            sh """
+              trivy image \
+                --severity ${TRIVY_SEVERITY} \
+                --format table \
+                --exit-code 0 \
+                --ignore-unfixed \
+                ${IMAGE_FRONTEND}:${TAG} | tee trivy-frontend.txt
+
+              trivy image \
+                --severity ${TRIVY_SEVERITY} \
+                --format sarif \
+                --output trivy-frontend.sarif \
+                ${IMAGE_FRONTEND}:${TAG}
+            """
+            archiveArtifacts artifacts: 'trivy-frontend.*', fingerprint: true
+          }
+        }
+      }
+    }
+
+    stage('Trivy — Gate CRITICAL') {
+      steps {
+        script {
+          def failIfCritical = { image ->
+            def rc = sh(
+              script: "trivy image --severity CRITICAL --exit-code 1 --ignore-unfixed ${image}",
+              returnStatus: true
+            )
+            if (rc != 0) {
+              error "❌ Trivy encontró vulnerabilidades CRITICAL fixables en ${image}"
+            }
+          }
+          failIfCritical("${IMAGE_BACKEND}:${TAG}")
+          failIfCritical("${IMAGE_FRONTEND}:${TAG}")
+        }
+      }
+    }
+
+    stage('Syft — SBOM SPDX') {
+      steps {
+        sh """
+          syft ${IMAGE_BACKEND}:${TAG}  -o spdx-json > sbom-backend.spdx.json
+          syft ${IMAGE_FRONTEND}:${TAG} -o spdx-json > sbom-frontend.spdx.json
+        """
+        archiveArtifacts artifacts: 'sbom-*.spdx.json', fingerprint: true
+      }
+    }
+
+    stage('Push a GHCR') {
+      steps {
+        withCredentials([usernamePassword(
+          credentialsId: 'ghcr-token',
+          usernameVariable: 'GHCR_USER',
+          passwordVariable: 'GHCR_TOKEN'
+        )]) {
+          sh """
+            echo "\$GHCR_TOKEN" | docker login ${REGISTRY} -u "\$GHCR_USER" --password-stdin
+            docker push ${IMAGE_BACKEND}:${TAG}
+            docker push ${IMAGE_BACKEND}:latest
+            docker push ${IMAGE_FRONTEND}:${TAG}
+            docker push ${IMAGE_FRONTEND}:latest
+          """
+        }
+      }
+    }
+
+    stage('Cosign — firma + attest SBOM') {
+      steps {
+        withCredentials([
+          file(credentialsId: 'cosign-key', variable: 'COSIGN_KEY'),
+          string(credentialsId: 'cosign-password', variable: 'COSIGN_PASSWORD')
+        ]) {
+          sh """
+            cosign sign --yes --key \$COSIGN_KEY ${IMAGE_BACKEND}:${TAG}
+            cosign sign --yes --key \$COSIGN_KEY ${IMAGE_FRONTEND}:${TAG}
+
+            cosign attest --yes --key \$COSIGN_KEY \
+              --predicate sbom-backend.spdx.json --type spdxjson \
+              ${IMAGE_BACKEND}:${TAG}
+
+            cosign attest --yes --key \$COSIGN_KEY \
+              --predicate sbom-frontend.spdx.json --type spdxjson \
+              ${IMAGE_FRONTEND}:${TAG}
+          """
+        }
+      }
+    }
+
+    stage('Cosign verify') {
+      steps {
+        withCredentials([file(credentialsId: 'cosign-pubkey', variable: 'COSIGN_PUB')]) {
+          sh """
+            cosign verify --key \$COSIGN_PUB ${IMAGE_BACKEND}:${TAG}
+            cosign verify --key \$COSIGN_PUB ${IMAGE_FRONTEND}:${TAG}
+          """
+        }
+      }
+    }
+
+    stage('OWASP ZAP — DAST contra staging') {
+      steps {
+        // Corre ZAP baseline scan contra el ingress staging del cluster kind.
+        // Requiere que Argo CD ya haya deployado la versión anterior en staging.
+        sh """
+          mkdir -p zap-reports
+          docker run --rm --network host \
+            -v \$(pwd)/zap-reports:/zap/wrk/:rw \
+            -v \$(pwd)/zap/rules.tsv:/zap/rules.tsv:ro \
+            zaproxy/zap-stable:latest \
+            zap-baseline.py \
+              -t http://localhost:8000 \
+              -c /zap/rules.tsv \
+              -r zap-baseline-report.html \
+              -x zap-baseline-report.xml \
+              -J zap-baseline-report.json \
+              -I  || true
+        """
+        publishHTML(target: [
+          reportDir: 'zap-reports',
+          reportFiles: 'zap-baseline-report.html',
+          reportName: 'OWASP ZAP Baseline',
+          keepAll: true,
+          allowMissing: false
+        ])
+        archiveArtifacts artifacts: 'zap-reports/*', fingerprint: true
+      }
+    }
+
+    stage('Promover al repo GitOps') {
+      when { branch 'main' }
+      steps {
+        withCredentials([usernamePassword(
+          credentialsId: 'gitops-repo-token',
+          usernameVariable: 'GH_USER',
+          passwordVariable: 'GH_TOKEN'
+        )]) {
+          sh """
+            git clone https://\$GH_USER:\$GH_TOKEN@github.com/TARIUS-S-A-S/forseti-devsecops-gitops.git gitops
+            cd gitops
+            # Bump de tags con yq (o sed)
+            sed -i "s|backendTag:.*|backendTag: \\"${TAG}\\"|"  environments/staging/values.yaml
+            sed -i "s|frontendTag:.*|frontendTag: \\"${TAG}\\"|" environments/staging/values.yaml
+            git config user.email "jenkins@tarius.ec"
+            git config user.name  "Jenkins CI"
+            git add environments/staging/values.yaml
+            git commit -m "chore(staging): bump backend+frontend a ${TAG}" || echo "sin cambios"
+            git push origin main
+          """
+        }
+      }
+    }
+  }
+
+  post {
+    always {
+      // Cleanup workspace pesado
+      cleanWs(patterns: [[pattern: 'gitops/**', type: 'INCLUDE']])
+    }
+    success {
+      echo "✅ Pipeline completo. Argo CD detectará el bump en <=3min y sync-eará."
+    }
+    failure {
+      echo "❌ Pipeline falló. Revisar etapa que rompió + artefactos archivados."
+    }
+  }
+}

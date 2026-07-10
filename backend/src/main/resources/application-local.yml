@@ -1,0 +1,42 @@
+# Perfil LOCAL — desarrollo en la máquina del dev
+# DB: Postgres en Docker Compose local
+# SRI: WireMock simulando endpoints
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/forseti_local
+    username: ${POSTGRES_USER:forseti}
+    password: ${POSTGRES_PASSWORD:forseti_local_password}
+  flyway:
+    baseline-on-migrate: true   # local OK
+  mail:
+    host: localhost
+    port: 1025  # Mailpit en compose local
+    properties:
+      mail.smtp.auth: false
+      mail.smtp.starttls.enable: false
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true   # local OK leer SQL formateado
+
+logging:
+  level:
+    ec.tarius.forseti: DEBUG  # local OK detalle
+
+forseti:
+  sri:
+    endpoint:
+      recepcion: http://localhost:8090/comprobantes/recepcion
+      autorizacion: http://localhost:8090/comprobantes/autorizacion
+    cert:
+      path: ${SRI_CERT_PATH:./dev-cert/cert.p12}
+      password: ${SRI_CERT_PASSWORD:dev}
+  brevo:
+    api-key: ${BREVO_API_KEY:disabled}
+  r2:
+    enabled: false
+  # Llave fija SOLO para dev local (32 bytes "forseti-dev-key-do-not-use-prod!" en base64). Nunca usar en prod.
+  master-key: ${FORSETI_MASTER_KEY:Zm9yc2V0aS1kZXYta2V5LWRvLW5vdC11c2UtcHJvZCE=}
+  app:
+    base-url: ${FORSETI_BASE_URL:http://localhost:5173}

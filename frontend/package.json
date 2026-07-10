@@ -1,0 +1,52 @@
+{
+  "name": "forseti-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Forseti — Frontend Vue 3 + Vite + PrimeVue. SaaS de facturación electrónica SRI Ecuador. TARIUS S.A.S",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "preview": "vite preview --host",
+    "lint": "eslint . --ext .vue,.ts,.tsx",
+    "lint:fix": "eslint . --ext .vue,.ts,.tsx --fix",
+    "type-check": "vue-tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0",
+    "pinia": "^2.3.0",
+    "primevue": "^4.2.5",
+    "@primevue/themes": "^4.2.5",
+    "primeicons": "^7.0.0",
+    "axios": "^1.7.9",
+    "@vueuse/core": "^12.4.0",
+    "dayjs": "^1.11.13",
+    "@fontsource/lora": "^5.1.0",
+    "@fontsource/inter": "^5.1.0",
+    "@fontsource/jetbrains-mono": "^5.1.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.1",
+    "@types/node": "^22.10.5",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "@vue/test-utils": "^2.4.6",
+    "@vue/tsconfig": "^0.7.0",
+    "eslint": "^9.18.0",
+    "eslint-plugin-vue": "^9.32.0",
+    "@typescript-eslint/eslint-plugin": "^8.20.0",
+    "@typescript-eslint/parser": "^8.20.0",
+    "@vue/eslint-config-typescript": "^14.2.0",
+    "jsdom": "^26.0.0",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.7",
+    "vitest": "^2.1.8",
+    "vue-tsc": "^2.2.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

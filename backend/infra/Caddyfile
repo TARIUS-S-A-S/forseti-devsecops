@@ -1,0 +1,49 @@
+# Forseti — Caddyfile producción
+# Caddy maneja HTTPS automático (Let's Encrypt). Cloudflare al frente con Full Strict.
+#
+# Sprint 1: agregar rate_limit en /api/v1/auth/login.
+# Staging (staging.forseti.tarius.ec): config en archivo aparte (import staging.caddy),
+# NO commiteado para evitar exponer credentials.
+
+forseti.tarius.ec {
+    encode gzip zstd
+
+    # Headers de seguridad — todos los responses
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=()"
+        Cross-Origin-Opener-Policy "same-origin"
+        Cross-Origin-Resource-Policy "same-origin"
+        # CSP — FIX A1/A2: sin unsafe-inline en scripts. Fonts self-hosted desde /fonts (Sprint 0 fix).
+        # 'strict-dynamic' permite cargar scripts dinámicos con nonce/hash; ajustar si rompe.
+        Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: https:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'"
+        -Server
+    }
+
+    # API → backend Spring Boot
+    @api path /api/* /actuator/*
+    handle @api {
+        reverse_proxy backend:8080 {
+            health_uri /actuator/health/readiness
+            health_interval 10s
+            health_timeout 3s
+        }
+    }
+
+    # Front estático (SPA Vue) — catch all (SPA fallback)
+    handle {
+        reverse_proxy frontend:80
+    }
+
+    # No loguear /actuator/health (ruido) excepto si falla
+    log {
+        output stdout
+        format json
+        # exclude /actuator/health  # Sprint 1: si se vuelve ruidoso
+    }
+}
+
+# Staging: configurar via `import /etc/caddy/staging.caddy` desde el VPS (archivo no commiteado).

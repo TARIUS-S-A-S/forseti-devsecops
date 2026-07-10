@@ -1,0 +1,73 @@
+package ec.tarius.forseti.shared.errors;
+
+import org.springframework.http.HttpStatus;
+
+public enum ErrorCode {
+
+    // Auth
+    EMAIL_YA_REGISTRADO(HttpStatus.CONFLICT),
+    CREDENCIALES_INVALIDAS(HttpStatus.UNAUTHORIZED),
+    EMAIL_NO_VERIFICADO(HttpStatus.FORBIDDEN),
+    CUENTA_DESHABILITADA(HttpStatus.FORBIDDEN),
+    CUENTA_BLOQUEADA(HttpStatus.TOO_MANY_REQUESTS),
+    PASSWORD_DEBIL(HttpStatus.BAD_REQUEST),
+    TOKEN_INVALIDO(HttpStatus.BAD_REQUEST),
+    TOKEN_EXPIRADO(HttpStatus.BAD_REQUEST),
+    TOTP_REQUERIDO(HttpStatus.UNAUTHORIZED),
+    TOTP_INVALIDO(HttpStatus.UNAUTHORIZED),
+
+    // Tenant
+    EMPRESA_NO_ENCONTRADA(HttpStatus.NOT_FOUND),
+    SIN_ACCESO_EMPRESA(HttpStatus.FORBIDDEN),
+    EMPRESA_YA_REGISTRADA(HttpStatus.CONFLICT),
+    RUC_INVALIDO(HttpStatus.BAD_REQUEST),
+    PERFIL_NO_ENCONTRADO(HttpStatus.NOT_FOUND),
+    ESTABLECIMIENTO_NO_ENCONTRADO(HttpStatus.NOT_FOUND),
+    ESTABLECIMIENTO_DUPLICADO(HttpStatus.CONFLICT),
+    PUNTO_EMISION_DUPLICADO(HttpStatus.CONFLICT),
+    CERTIFICADO_INVALIDO(HttpStatus.BAD_REQUEST),
+    CERTIFICADO_CADUCADO(HttpStatus.BAD_REQUEST),
+    CERTIFICADO_NO_ENCONTRADO(HttpStatus.NOT_FOUND),
+    CERTIFICADO_TIENE_COMPROBANTES(HttpStatus.CONFLICT),
+    OBLIGACION_NO_ENCONTRADA(HttpStatus.NOT_FOUND),
+
+    // Emisión SRI (Sprint 3)
+    PUNTO_EMISION_NO_ENCONTRADO(HttpStatus.NOT_FOUND),
+    SECUENCIAL_NO_CONFIGURADO(HttpStatus.BAD_REQUEST),
+    CERTIFICADO_NO_CARGADO(HttpStatus.BAD_REQUEST),
+    COMPROBANTE_DUPLICADO(HttpStatus.CONFLICT),
+    COMPROBANTE_NO_ENCONTRADO(HttpStatus.NOT_FOUND),
+    XML_INVALIDO(HttpStatus.BAD_REQUEST),
+    FIRMA_FALLIDA(HttpStatus.INTERNAL_SERVER_ERROR),
+
+    // Compras / Ingresos (Sprint 5)
+    COMPRA_NO_ENCONTRADA(HttpStatus.NOT_FOUND),
+    COMPRA_DUPLICADA(HttpStatus.CONFLICT),
+    COMPRA_YA_ANULADA(HttpStatus.CONFLICT),
+    INGRESO_NO_ENCONTRADO(HttpStatus.NOT_FOUND),
+    INGRESO_YA_ANULADO(HttpStatus.CONFLICT),
+    ADJUNTO_INVALIDO(HttpStatus.BAD_REQUEST),
+    ADJUNTO_DUPLICADO(HttpStatus.CONFLICT),
+    XML_COMPRA_INVALIDO(HttpStatus.BAD_REQUEST),
+    CATEGORIA_NO_ENCONTRADA(HttpStatus.NOT_FOUND),
+
+    // Rate limit
+    RATE_LIMIT(HttpStatus.TOO_MANY_REQUESTS),
+
+    // Genéricos
+    VALIDACION(HttpStatus.BAD_REQUEST),
+    NO_AUTORIZADO(HttpStatus.UNAUTHORIZED),
+    PROHIBIDO(HttpStatus.FORBIDDEN),
+    NO_ENCONTRADO(HttpStatus.NOT_FOUND),
+    ERROR_INTERNO(HttpStatus.INTERNAL_SERVER_ERROR);
+
+    private final HttpStatus status;
+
+    ErrorCode(HttpStatus status) {
+        this.status = status;
+    }
+
+    public HttpStatus status() {
+        return status;
+    }
+}

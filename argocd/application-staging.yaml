@@ -1,0 +1,39 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: forseti-staging
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: forseti
+  source:
+    repoURL: https://github.com/TARIUS-S-A-S/forseti-devsecops-gitops.git
+    targetRevision: main
+    path: environments/staging
+    helm:
+      valueFiles:
+        - values.yaml
+      # También podemos pasar chart values inline si es necesario
+      # parameters:
+      #   - name: image.backendTag
+      #     value: "sha-abc1234"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: forseti-staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+      - ApplyOutOfSyncOnly=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+  revisionHistoryLimit: 10

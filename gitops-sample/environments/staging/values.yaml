@@ -1,0 +1,20 @@
+# Sobrescribe helm/forseti/values.yaml para el ambiente staging
+namespace: forseti-staging
+
+image:
+  registry: ghcr.io
+  repository: tarius-s-a-s/forseti-devsecops
+  backendTag: "sha-abc1234"    # ← Jenkins reemplaza tras firmar imagen
+  frontendTag: "sha-abc1234"   # ← Jenkins reemplaza tras firmar imagen
+  pullPolicy: Always
+
+ingress:
+  enabled: true
+  className: nginx
+  host: staging.forseti.local
+
+backend:
+  replicas: 1
+  env:
+    SPRING_PROFILES_ACTIVE: prod
+    FORSETI_BASE_URL: http://staging.forseti.local

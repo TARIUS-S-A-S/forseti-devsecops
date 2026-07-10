@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 140" role="img" aria-label="Forseti.">
+  <title>Forseti.</title>
+  <desc>Wordmark oficial v3.0: Lora Bold 700, F mayúscula, letter-spacing -0.5. Punto final en mandarina #FB923C (rasgo distintivo, paralelo al punto ámbar de TARIUS).</desc>
+  <style>
+    .wm { font-family: 'Lora', Georgia, 'Times New Roman', serif; font-weight: 700; font-size: 120px; letter-spacing: -1px; }
+  </style>
+  <text x="20" y="108" class="wm" fill="#0F172A">Forseti</text>
+  <text x="445" y="108" class="wm" fill="#FB923C">.</text>
+</svg>

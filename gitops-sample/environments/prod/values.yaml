@@ -1,0 +1,26 @@
+# Sobrescribe helm/forseti/values.yaml para el ambiente producción
+namespace: forseti-prod
+
+image:
+  registry: ghcr.io
+  repository: tarius-s-a-s/forseti-devsecops
+  backendTag: "v1.0.0"     # ← promoción MANUAL (solo tags semver aquí)
+  frontendTag: "v1.0.0"
+  pullPolicy: IfNotPresent
+
+ingress:
+  enabled: true
+  className: nginx
+  host: forseti.tarius.ec
+
+backend:
+  replicas: 2
+  resources:
+    requests: { cpu: 500m, memory: 768Mi }
+    limits:   { cpu: 2000m, memory: 1500Mi }
+  env:
+    SPRING_PROFILES_ACTIVE: prod
+    FORSETI_BASE_URL: https://forseti.tarius.ec
+
+frontend:
+  replicas: 2

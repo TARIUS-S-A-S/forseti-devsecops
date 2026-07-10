@@ -1,0 +1,118 @@
+# ──────────────────────────────────────────────────────────────────────
+# Forseti DevSecOps — Stack local completo
+# ──────────────────────────────────────────────────────────────────────
+# Uso:
+#   docker compose up -d              # levanta todo
+#   docker compose logs -f backend    # ver logs
+#   docker compose down               # baja todo
+#   docker compose down -v            # baja + borra volumes
+# ──────────────────────────────────────────────────────────────────────
+
+services:
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: forseti-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: forseti_local
+      POSTGRES_USER: forseti
+      POSTGRES_PASSWORD: forseti_dev_password_change_me
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U forseti -d forseti_local"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - forseti-net
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: forseti-mailpit
+    restart: unless-stopped
+    ports:
+      - "1025:1025"   # SMTP
+      - "8025:8025"   # UI web
+    networks:
+      - forseti-net
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: forseti-backend:local
+    container_name: forseti-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      SERVER_PORT: 8080
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: forseti_local
+      POSTGRES_USER: forseti
+      POSTGRES_PASSWORD: forseti_dev_password_change_me
+      # Llave maestra AES-256-GCM DEV (regenerar en prod con: openssl rand -base64 32)
+      FORSETI_MASTER_KEY: "KfB+gReHrhqs1f4dOQRYY31HpGdLOzEFTVonURXqqcM="
+      FORSETI_BASE_URL: http://localhost:5173
+      BREVO_SMTP_HOST: mailpit
+      BREVO_SMTP_PORT: 1025
+      BREVO_SMTP_USER: ""
+      BREVO_SMTP_PASSWORD: ""
+      BREVO_API_KEY: disabled
+      MAIL_FROM_NAME: "Forseti (dev)"
+      MAIL_FROM_ADDRESS: "no-reply@forseti.local"
+    ports:
+      - "8080:8080"
+    networks:
+      - forseti-net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: forseti-frontend:local
+    container_name: forseti-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
+    networks:
+      - forseti-net
+
+  # Jenkins con Docker-in-Docker para que pueda buildear imágenes
+  jenkins:
+    build:
+      context: ./jenkins
+      dockerfile: Dockerfile
+    image: forseti-jenkins:local
+    container_name: forseti-jenkins
+    restart: unless-stopped
+    user: root  # necesario para acceder a /var/run/docker.sock
+    ports:
+      - "8090:8080"   # UI Jenkins
+      - "50000:50000" # agent
+    volumes:
+      - jenkins-data:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      JAVA_OPTS: "-Djenkins.install.runSetupWizard=false"
+    networks:
+      - forseti-net
+
+volumes:
+  postgres-data:
+  jenkins-data:
+
+networks:
+  forseti-net:
+    driver: bridge

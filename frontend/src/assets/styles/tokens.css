@@ -1,0 +1,81 @@
+/* ─────────────────────────────────────────────────────────────
+   Forseti — Tokens de marca v3.0
+   Sincronizado con _marca-tokens/forseti.tokens.json
+   Concepto: justicia, equilibrio nórdico. Marca cálida + UI fría.
+   ───────────────────────────────────────────────────────────── */
+
+:root {
+  /* ─── Color de MARCA (mandarina) ─── */
+  --color-marca:       #FB923C;
+  --color-marca-deep:  #9A3412;
+  --color-marca-soft:  #FED7AA;
+  --color-marca-bg:    #FFF7ED;
+
+  /* ─── Color de ACCIÓN UI (navy — patrón Stripe/Linear) ─── */
+  --color-action:        #1E3A8A;
+  --color-action-hover:  #1E40AF;
+
+  /* ─── Superficies y texto ─── */
+  --color-bg:       #F8FAFC;
+  --color-surface:  #FFFFFF;
+  --color-ink:      #0F172A;
+  --color-muted:    #64748B;
+  --color-border:   #E2E8F0;
+
+  /* ─── Semáforo semántico (FIJOS, no cambian con tema) ─── */
+  --color-success:     #16A34A;
+  --color-success-bg:  #ECFDF5;
+  --color-danger:      #DC2626;
+  --color-danger-bg:   #FEF2F2;
+  --color-warning:     #D97706;
+  --color-warning-bg:  #FFFBEB;
+
+  /* ─── Endorsement TARIUS ─── */
+  --color-tarius-navy:  #0F2A43;
+  --color-tarius-amber: #D97706;
+  --color-endorsement:  #94A3B8;
+
+  /* ─── Tipografías ─── */
+  --font-display: 'Lora', Georgia, 'Times New Roman', serif;
+  --font-body:    'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono:    'JetBrains Mono', ui-monospace, monospace;
+
+  /* ─── Tamaños ─── */
+  --fs-xs:  12px;
+  --fs-sm:  14px;
+  --fs-md:  16px;
+  --fs-lg:  20px;
+  --fs-xl:  28px;
+  --fs-2xl: 40px;
+  --fs-3xl: 56px;
+
+  /* ─── Spacing (escala 4px) ─── */
+  --sp-1:  4px;
+  --sp-2:  8px;
+  --sp-3:  12px;
+  --sp-4:  16px;
+  --sp-6:  24px;
+  --sp-8:  32px;
+  --sp-12: 48px;
+  --sp-16: 64px;
+
+  /* ─── Border radius ─── */
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:   12px;
+  --radius-full: 9999px;
+
+  /* ─── Layout ─── */
+  --max-page-width:      1200px;  /* listas, dashboards, configuración general */
+  --max-page-width-form: 960px;   /* formularios concentrados (factura, alta empresa) */
+  --bp-mobile:           768px;   /* punto de quiebre celular (no usar como var en @media: para @media leer este valor directo) */
+
+  /* ─── Sombras ─── */
+  --shadow-sm:  0 1px 2px rgba(15, 23, 42, 0.05);
+  --shadow-md:  0 4px 8px -2px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
+  --shadow-lg:  0 12px 24px -8px rgba(15, 23, 42, 0.12), 0 6px 12px -4px rgba(15, 23, 42, 0.06);
+
+  /* ─── Animación ─── */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}

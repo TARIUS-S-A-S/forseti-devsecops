@@ -1,0 +1,28 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: disallow-latest-tag
+  annotations:
+    policies.kyverno.io/title: Prohibir tag :latest en prod
+    policies.kyverno.io/category: Best Practices
+    policies.kyverno.io/severity: medium
+    policies.kyverno.io/description: >-
+      El tag :latest es mutable — rompe rollbacks, dificulta trazabilidad
+      y hace ambigua la firma Cosign. Se exige tag inmutable (sha-… o vX.Y.Z).
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: block-latest
+      match:
+        any:
+          - resources:
+              kinds: [Pod]
+              namespaces: [forseti-prod]
+      validate:
+        message: "En forseti-prod está prohibido el tag :latest o imagen sin tag. Usá sha-… o vX.Y.Z."
+        pattern:
+          spec:
+            containers:
+              - name: "?*"
+                image: "!*:latest & !*:!*"

@@ -1,0 +1,24 @@
+# Config Gitleaks — Forseti DevSecOps demo
+# Referencia: https://github.com/gitleaks/gitleaks
+
+title = "Forseti Gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Falsos positivos conocidos"
+# .env.example es una plantilla pública
+paths = [
+  '''\.env\.example$''',
+  '''docs/.*''',
+  '''backend/src/test/.*''',
+  '''README.md''',
+]
+# Placeholders literales
+regexes = [
+  '''<generar-con-openssl-rand-base64-\d+>''',
+  '''KfB\+gReHrhqs1f4dOQRYY31HpGdLOzEFTVonURXqqcM=''',  # llave DEV pública (ejemplo docs)
+  '''forseti_dev_password_change_me''',
+  '''forseti_demo_change_me''',
+]

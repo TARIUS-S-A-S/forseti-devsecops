@@ -1,0 +1,52 @@
+# Perfil para EmisionE2EIT — Postgres local en 55433, JobRunr off, SRI URLs apuntan a localhost
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:55433/forseti_prod
+    username: forseti
+    password: test_pwd
+    hikari:
+      maximum-pool-size: 10
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    clean-disabled: false
+  mail:
+    host: localhost
+    port: 1025
+
+# JobRunr off — los jobs los disparamos manualmente en el test
+org:
+  jobrunr:
+    background-job-server:
+      enabled: false
+    dashboard:
+      enabled: false
+    database:
+      skip-create: false
+
+forseti:
+  master-key: ${FORSETI_MASTER_KEY:N9/o4rJXI9+J4iu6vOG2VwAYAI6BQiZWA9MBmaTP2+k=}  # base64 de 32 bytes — test only
+  app:
+    base-url: http://localhost:5173
+  cors:
+    allowed-origins:
+      - http://localhost:5173
+  sri:
+    http-timeout: 5s
+    pruebas:
+      recepcion: http://localhost/recepcion-placeholder
+      autorizacion: http://localhost/autorizacion-placeholder
+
+logging:
+  level:
+    root: WARN
+    ec.tarius.forseti: INFO
+    org.flywaydb: INFO

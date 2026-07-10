@@ -1,0 +1,40 @@
+# Forseti — entorno LOCAL de desarrollo
+# Levanta: Postgres + Mailpit + WireMock SRI
+# El backend corre nativo en la máquina (mvn spring-boot:run) apuntando a estos servicios.
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: forseti-local-postgres
+    environment:
+      POSTGRES_DB: forseti_local
+      POSTGRES_USER: forseti
+      POSTGRES_PASSWORD: forseti_local_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - forseti-local-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U forseti -d forseti_local"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: forseti-local-mailpit
+    ports:
+      - "1025:1025"   # SMTP
+      - "8025:8025"   # UI web — http://localhost:8025
+
+  wiremock:
+    image: wiremock/wiremock:3.10.0
+    container_name: forseti-local-wiremock
+    ports:
+      - "8090:8080"
+    command: ["--verbose"]
+    volumes:
+      - ./wiremock:/home/wiremock
+
+volumes:
+  forseti-local-postgres:

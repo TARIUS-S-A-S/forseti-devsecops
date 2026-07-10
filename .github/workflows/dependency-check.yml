@@ -1,0 +1,69 @@
+name: SCA — OWASP Dependency-Check
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+  schedule:
+    - cron: '0 7 * * 1'  # Lunes 07:00 UTC
+
+jobs:
+  owasp-dependency-check:
+    name: OWASP Dep-Check (Java + JS)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend deps (para escaneo)
+        working-directory: frontend
+        run: npm ci --no-audit --no-fund
+
+      - name: Cache NVD data (Dep-Check)
+        uses: actions/cache@v4
+        with:
+          path: ~/.gradle/dependency-check-data
+          key: dependency-check-nvd-${{ runner.os }}
+
+      - name: Run OWASP Dependency-Check
+        uses: dependency-check/Dependency-Check_Action@main
+        with:
+          project: forseti
+          path: .
+          format: 'ALL'
+          args: >-
+            --failOnCVSS 8
+            --enableRetired
+            --exclude "**/node_modules/**/node_modules/**"
+            --nvdApiKey ${{ secrets.NVD_API_KEY }}
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: owasp-dependency-check-report
+          path: reports/
+          retention-days: 30
+
+      - name: Upload SARIF to code scanning
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: reports/dependency-check-report.sarif

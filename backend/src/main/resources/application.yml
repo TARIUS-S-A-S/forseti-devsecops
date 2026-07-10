@@ -1,0 +1,104 @@
+# Forseti Backend — config base
+# Configs por perfil: application-local.yml, application-staging.yml, application-prod.yml
+
+spring:
+  application:
+    name: forseti-backend
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:local}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate  # Flyway maneja el schema, NUNCA Hibernate
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+        format_sql: false  # PROD: false (LOPDP - no formatear queries con valores en logs)
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    # baseline-on-migrate: overridado por perfil (local=true, prod=false para detectar drift)
+  # Multipart: límite de archivos subidos. ALINEADO con TikaFileValidator.MAX_BYTES (10 MB)
+  # para que Spring rechace en el filtro ANTES de que el byte[] llegue al heap del controller.
+  # Si se aumenta acá, hay que aumentar también en TikaFileValidator (gate ④).
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 15MB  # archivo + form fields (categoriaId + concepto, etc.)
+      file-size-threshold: 1MB  # archivos > 1MB van a disco, no a heap
+
+server:
+  port: ${SERVER_PORT:8080}
+  forward-headers-strategy: framework  # Caddy/Cloudflare en frente
+  compression:
+    enabled: true
+  error:
+    include-message: never
+    include-stacktrace: never
+    include-binding-errors: never
+    include-exception: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: never  # Detalle solo si pasa por una auth admin (Sprint 1)
+      probes:
+        enabled: true     # /actuator/health/liveness y /readiness
+  info:
+    git:
+      mode: simple
+    env:
+      enabled: false  # FIX A3: NO exponer ENV via actuator info
+    build:
+      enabled: true
+
+# JobRunr — jobs async persistidos en Postgres (sin Redis/Rabbit)
+org:
+  jobrunr:
+    database:
+      skip-create: false
+    background-job-server:
+      enabled: true
+      worker-count: 2  # conservador para 1 GB RAM
+    dashboard:
+      enabled: false  # Sprint 1: habilitar tras auth con basicauth Caddy
+
+logging:
+  level:
+    root: INFO
+    ec.tarius.forseti: INFO  # FIX M9: INFO por default (local override a DEBUG)
+    org.flywaydb: INFO
+  pattern:
+    console: "%clr(%d{HH:mm:ss.SSS}){faint} %clr(%-5level) %clr([%thread]){faint} %clr(%logger{36}){cyan} %msg%n"
+
+# Tokens config personalizados Forseti
+forseti:
+  cors:
+    allowed-origins:
+      - https://forseti.tarius.ec
+      - https://staging.forseti.tarius.ec
+      - http://localhost:5173
+  # AES-256-GCM master key (base64 de 32 bytes). Vive FUERA de la DB (ADR-6).
+  # En prod: setear FORSETI_MASTER_KEY como variable de entorno (NUNCA commitear).
+  # Generar: openssl rand -base64 32
+  master-key: ${FORSETI_MASTER_KEY:}
+  app:
+    # URL base del frontend, usada para construir links de email (verificación, invitación, recovery)
+    base-url: ${FORSETI_BASE_URL:https://forseti.tarius.ec}
+  # URLs de los WS SRI (recepción + autorización por ambiente).
+  # Las de pruebas/producción pueden sobreescribirse vía ENV para tests (WireMock).
+  sri:
+    http-timeout: 30s
+    pruebas:
+      recepcion: ${FORSETI_SRI_PRUEBAS_RECEPCION:https://celcer.sri.gob.ec/comprobantes-electronicos-ws/RecepcionComprobantesOffline}
+      autorizacion: ${FORSETI_SRI_PRUEBAS_AUTORIZACION:https://celcer.sri.gob.ec/comprobantes-electronicos-ws/AutorizacionComprobantesOffline}
+    produccion:
+      recepcion: ${FORSETI_SRI_PROD_RECEPCION:https://cel.sri.gob.ec/comprobantes-electronicos-ws/RecepcionComprobantesOffline}
+      autorizacion: ${FORSETI_SRI_PROD_AUTORIZACION:https://cel.sri.gob.ec/comprobantes-electronicos-ws/AutorizacionComprobantesOffline}
