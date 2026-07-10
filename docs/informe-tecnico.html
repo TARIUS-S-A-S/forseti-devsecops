@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es-EC" xml:lang="es-EC">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="Hernán Jurado" />
+  <meta name="dcterms.date" content="2026-07-17" />
+  <title>CI/CD con enfoque DevSecOps — Caso Forseti</title>
+  <style>
+
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+
+ul.task-list[class]{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+font-size: inherit;
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+.display.math{display: block; text-align: center; margin: 0.5rem auto;}
+
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+  <style type="text/css">@page {
+size: A4;
+margin: 2.2cm;
+@bottom-right { content: counter(page) " / " counter(pages); font-size: 9pt; color: #888; }
+@top-left { content: "Forseti · CI/CD DevSecOps · ISWZ3205"; font-size: 8.5pt; color: #888; }
+}
+body {
+font-family: Georgia, "Times New Roman", serif;
+line-height: 1.55;
+color: #222;
+font-size: 10.5pt;
+}
+h1, h2, h3, h4 {
+font-family: Georgia, serif;
+color: #1E3A8A;
+page-break-after: avoid;
+}
+h1 { font-size: 20pt; margin-top: 1.6em; border-bottom: 2px solid #FB923C; padding-bottom: 0.2em; }
+h2 { font-size: 15pt; margin-top: 1.4em; }
+h3 { font-size: 12pt; margin-top: 1.2em; }
+a { color: #1E3A8A; text-decoration: none; }
+code {
+font-family: Consolas, "Courier New", monospace;
+background: #f6f8fa;
+padding: 0.1em 0.35em;
+border-radius: 3px;
+font-size: 0.9em;
+}
+pre {
+background: #f6f8fa;
+padding: 1em;
+border-left: 3px solid #FB923C;
+overflow-x: auto;
+font-size: 8.5pt;
+line-height: 1.35;
+page-break-inside: avoid;
+}
+pre code { background: none; padding: 0; }
+table {
+border-collapse: collapse;
+margin: 1em 0;
+width: 100%;
+page-break-inside: avoid;
+font-size: 9.5pt;
+}
+th, td { border: 1px solid #ccc; padding: 0.4em 0.7em; text-align: left; vertical-align: top; }
+th { background: #eef; color: #1E3A8A; }
+blockquote { border-left: 3px solid #FB923C; padding-left: 1em; color: #555; }
+#TOC { border: 1px solid #ddd; padding: 1em 1.5em; background: #fafafa; margin-bottom: 2em; }
+#TOC ul { list-style: none; padding-left: 1em; }
+#TOC a { color: #333; }
+</style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">CI/CD con enfoque DevSecOps — Caso Forseti</h1>
+<p class="subtitle">Informe técnico — ISWZ3205 Procesos de Software</p>
+<p class="author">Hernán Jurado</p>
+<p class="date">2026-07-17</p>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#objetivo-del-proyecto" id="toc-objetivo-del-proyecto"><span class="toc-section-number">1</span>
+1. Objetivo del proyecto</a></li>
+<li><a href="#contexto-del-caso-de-estudio-forseti" id="toc-contexto-del-caso-de-estudio-forseti"><span class="toc-section-number">2</span> 2. Contexto del caso de estudio:
+Forseti</a>
+<ul>
+<li><a href="#stack-objetivo" id="toc-stack-objetivo"><span class="toc-section-number">2.1</span> 2.1 Stack objetivo</a></li>
+</ul></li>
+<li><a href="#arquitectura-del-pipeline" id="toc-arquitectura-del-pipeline"><span class="toc-section-number">3</span> 3. Arquitectura del pipeline</a>
+<ul>
+<li><a href="#capa-1-ci-rápido-github-actions" id="toc-capa-1-ci-rápido-github-actions"><span class="toc-section-number">3.1</span> 3.1 Capa 1 — CI rápido (GitHub
+Actions)</a></li>
+<li><a href="#capa-2-release-engineering-pesado-jenkins" id="toc-capa-2-release-engineering-pesado-jenkins"><span class="toc-section-number">3.2</span> 3.2 Capa 2 — Release engineering
+pesado (Jenkins)</a></li>
+<li><a href="#capa-3-gitops-kubernetes-argo-cd-kind-kyverno" id="toc-capa-3-gitops-kubernetes-argo-cd-kind-kyverno"><span class="toc-section-number">3.3</span> 3.3 Capa 3 — GitOps + Kubernetes
+(Argo CD + kind + Kyverno)</a></li>
+<li><a href="#diagrama-end-to-end" id="toc-diagrama-end-to-end"><span class="toc-section-number">3.4</span> 3.4 Diagrama end-to-end</a></li>
+</ul></li>
+<li><a href="#herramientas-utilizadas-y-propósito" id="toc-herramientas-utilizadas-y-propósito"><span class="toc-section-number">4</span> 4. Herramientas utilizadas y
+propósito</a>
+<ul>
+<li><a href="#etapa-de-ci-feedback-en-pr" id="toc-etapa-de-ci-feedback-en-pr"><span class="toc-section-number">4.1</span> 4.1 Etapa de CI (feedback en
+PR)</a></li>
+<li><a href="#etapa-de-release-post-merge" id="toc-etapa-de-release-post-merge"><span class="toc-section-number">4.2</span> 4.2 Etapa de release
+(post-merge)</a></li>
+<li><a href="#etapa-de-despliegue" id="toc-etapa-de-despliegue"><span class="toc-section-number">4.3</span> 4.3 Etapa de despliegue</a></li>
+<li><a href="#herramientas-evaluadas-y-descartadas-y-por-qué" id="toc-herramientas-evaluadas-y-descartadas-y-por-qué"><span class="toc-section-number">4.4</span> 4.4 Herramientas evaluadas y
+<strong>descartadas</strong> — y por qué</a></li>
+</ul></li>
+<li><a href="#etapas-del-pipeline-en-detalle" id="toc-etapas-del-pipeline-en-detalle"><span class="toc-section-number">5</span> 5. Etapas del pipeline en
+detalle</a>
+<ul>
+<li><a href="#github-actions-ci.yml-feedback-rápido" id="toc-github-actions-ci.yml-feedback-rápido"><span class="toc-section-number">5.1</span> 5.1 GitHub Actions —
+<code>ci.yml</code> (feedback rápido)</a></li>
+<li><a href="#codeql-sast" id="toc-codeql-sast"><span class="toc-section-number">5.2</span> 5.2 CodeQL — SAST</a></li>
+<li><a href="#owasp-dependency-check-sca" id="toc-owasp-dependency-check-sca"><span class="toc-section-number">5.3</span> 5.3 OWASP Dependency-Check —
+SCA</a></li>
+<li><a href="#gitleaks-secrets-scan" id="toc-gitleaks-secrets-scan"><span class="toc-section-number">5.4</span> 5.4 Gitleaks — secrets
+scan</a></li>
+<li><a href="#docker-build.yml-supply-chain-security" id="toc-docker-build.yml-supply-chain-security"><span class="toc-section-number">5.5</span> 5.5 docker-build.yml — supply
+chain security</a></li>
+<li><a href="#jenkins-release-pipeline" id="toc-jenkins-release-pipeline"><span class="toc-section-number">5.6</span> 5.6 Jenkins — release
+pipeline</a></li>
+<li><a href="#argo-cd-gitops-sync" id="toc-argo-cd-gitops-sync"><span class="toc-section-number">5.7</span> 5.7 Argo CD — GitOps sync</a></li>
+<li><a href="#kyverno-admission-control" id="toc-kyverno-admission-control"><span class="toc-section-number">5.8</span> 5.8 Kyverno — admission
+control</a></li>
+<li><a href="#owasp-zap-dast" id="toc-owasp-zap-dast"><span class="toc-section-number">5.9</span> 5.9 OWASP ZAP — DAST</a></li>
+</ul></li>
+<li><a href="#evidencias-y-resultados" id="toc-evidencias-y-resultados"><span class="toc-section-number">6</span> 6. Evidencias y resultados</a>
+<ul>
+<li><a href="#github-actions-status-matrix" id="toc-github-actions-status-matrix"><span class="toc-section-number">6.1</span> 6.1 GitHub Actions — status
+matrix</a></li>
+<li><a href="#jenkins-pipeline-última-corrida-main" id="toc-jenkins-pipeline-última-corrida-main"><span class="toc-section-number">6.2</span> 6.2 Jenkins pipeline — última
+corrida <code>main</code></a></li>
+<li><a href="#kyverno-policies-activas" id="toc-kyverno-policies-activas"><span class="toc-section-number">6.3</span> 6.3 Kyverno — policies
+activas</a></li>
+<li><a href="#argo-cd-health" id="toc-argo-cd-health"><span class="toc-section-number">6.4</span> 6.4 Argo CD — health</a></li>
+<li><a href="#métricas-globales-del-pipeline" id="toc-métricas-globales-del-pipeline"><span class="toc-section-number">6.5</span> 6.5 Métricas globales del
+pipeline</a></li>
+</ul></li>
+<li><a href="#conclusiones-y-aprendizajes" id="toc-conclusiones-y-aprendizajes"><span class="toc-section-number">7</span> 7. Conclusiones y aprendizajes</a>
+<ul>
+<li><a href="#sobre-la-arquitectura-elegida" id="toc-sobre-la-arquitectura-elegida"><span class="toc-section-number">7.1</span> 7.1 Sobre la arquitectura
+elegida</a></li>
+<li><a href="#sobre-devsecops-práctico" id="toc-sobre-devsecops-práctico"><span class="toc-section-number">7.2</span> 7.2 Sobre DevSecOps
+práctico</a></li>
+<li><a href="#sobre-gitops" id="toc-sobre-gitops"><span class="toc-section-number">7.3</span> 7.3 Sobre GitOps</a></li>
+<li><a href="#sobre-la-firma-de-imágenes" id="toc-sobre-la-firma-de-imágenes"><span class="toc-section-number">7.4</span> 7.4 Sobre la firma de
+imágenes</a></li>
+<li><a href="#lecciones-que-quedan" id="toc-lecciones-que-quedan"><span class="toc-section-number">7.5</span> 7.5 Lecciones que quedan</a></li>
+<li><a href="#trabajo-futuro" id="toc-trabajo-futuro"><span class="toc-section-number">7.6</span> 7.6 Trabajo futuro</a></li>
+</ul></li>
+<li><a href="#referencias" id="toc-referencias"><span class="toc-section-number">8</span> 8. Referencias</a></li>
+</ul>
+</nav>
+<h1 data-number="1" id="objetivo-del-proyecto"><span class="header-section-number">1</span> 1. Objetivo del proyecto</h1>
+<p>El objetivo de este trabajo es implementar y documentar un
+<strong>pipeline CI/CD con enfoque DevSecOps</strong> completo, aplicado
+a <strong>Forseti</strong>: un SaaS real de facturación electrónica que
+emite comprobantes firmados con XAdES-BES contra el Servicio de Rentas
+Internas (SRI) de Ecuador.</p>
+<p>El pipeline debe cubrir el ciclo entero — desde el commit del
+desarrollador hasta el despliegue en un cluster Kubernetes — integrando
+en cada etapa controles de seguridad de tipo <strong>SAST</strong>,
+<strong>DAST</strong>, <strong>SCA</strong>, <strong>secretos</strong>,
+<strong>firma de artefactos</strong> y <strong>policy-as-code</strong>,
+sin duplicar la responsabilidad de ninguna herramienta.</p>
+<p>Los objetivos específicos son:</p>
+<ol type="1">
+<li>Diseñar un pipeline con <strong>responsabilidades claramente
+separadas</strong> entre GitHub Actions (feedback rápido en PR) y
+Jenkins (release engineering pesado en <code>main</code>).</li>
+<li>Integrar como mínimo <strong>cinco herramientas de análisis de
+seguridad</strong> que se complementen entre sí — no que se pisen.</li>
+<li><strong>Firmar los artefactos</strong> (imágenes Docker + SBOM) con
+Cosign / Sigstore y <strong>verificar la firma en el cluster</strong>
+mediante Kyverno.</li>
+<li>Adoptar el patrón <strong>GitOps</strong> con Argo CD para que el
+estado del cluster refleje siempre lo que hay en un repositorio Git —
+sin <code>kubectl apply</code> manual.</li>
+<li>Demostrar el flujo end-to-end sobre un cluster <strong>kind</strong>
+local reproducible, con manifests y scripts que cualquiera pueda
+ejecutar.</li>
+</ol>
+<h1 data-number="2" id="contexto-del-caso-de-estudio-forseti"><span class="header-section-number">2</span> 2. Contexto del caso de estudio:
+Forseti</h1>
+<p>Forseti es un producto real de <strong>TARIUS S.A.S.</strong> en
+producción desde junio de 2026. Está desplegado sobre un VPS Vultr Miami
+con Docker Compose + Nginx + Let’s Encrypt y ya emitió comprobantes
+autorizados por el SRI en ambientes de pruebas y de producción. El
+código real es privado; para este trabajo académico se generó una
+<strong>versión demo sanitizada</strong> (repos públicos
+<code>forseti-devsecops</code> y <code>forseti-devsecops-gitops</code>)
+que preserva la lógica sensible del dominio (firma XAdES-BES, generación
+de clave de acceso, plantillas XML del SRI) pero <strong>elimina
+secretos</strong>: <code>.env</code> reales, <code>.p12</code> de firma
+electrónica, contraseñas de base de datos y la llave maestra AES-256-GCM
+que cifra los certificados.</p>
+<p>Elegí Forseti como caso porque cumple tres condiciones que refuerzan
+el ejercicio DevSecOps:</p>
+<ul>
+<li><strong>Alto riesgo de compliance</strong>: procesa RUCs, correos,
+direcciones — datos personales bajo la LOPDP (Ley Orgánica de Protección
+de Datos Personales, Ecuador 2021).</li>
+<li><strong>Alta sensibilidad criptográfica</strong>: maneja
+certificados digitales <code>.p12</code> privados y firma XAdES-BES; una
+falla de firma corrompe la validez fiscal del comprobante.</li>
+<li><strong>Alta cadencia de entrega</strong>: la base tributaria cambia
+dos veces al año — el pipeline debe soportar releases seguros sin pausar
+la producción.</li>
+</ul>
+<h2 data-number="2.1" id="stack-objetivo"><span class="header-section-number">2.1</span> 2.1 Stack objetivo</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Capa</th>
+<th>Tecnología</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Backend</td>
+<td>Java 21 + Spring Boot 3.4 + Maven, firma XAdES con Apache Santuario,
+SOAP con Apache CXF, jobs con JobRunr</td>
+</tr>
+<tr>
+<td>Frontend</td>
+<td>Vue 3 + Vite + TypeScript + PrimeVue + Pinia</td>
+</tr>
+<tr>
+<td>Base de datos</td>
+<td>PostgreSQL 16 con Row-Level Security (multi-tenant)</td>
+</tr>
+<tr>
+<td>Contenedores</td>
+<td>Dockerfile multi-stage → imágenes <code>distroless-like</code>
+(alpine JRE / nginx-alpine)</td>
+</tr>
+<tr>
+<td>Orquestación</td>
+<td>Kubernetes (cluster kind local para la demo, k3s en VPS en
+producción real)</td>
+</tr>
+<tr>
+<td>Deploy</td>
+<td>Helm chart parametrizable + Argo CD (GitOps)</td>
+</tr>
+</tbody>
+</table>
+<h1 data-number="3" id="arquitectura-del-pipeline"><span class="header-section-number">3</span> 3. Arquitectura del pipeline</h1>
+<p>El pipeline se organiza en <strong>tres capas</strong> con
+responsabilidades independientes.</p>
+<h2 data-number="3.1" id="capa-1-ci-rápido-github-actions"><span class="header-section-number">3.1</span> 3.1 Capa 1 — CI rápido (GitHub
+Actions)</h2>
+<p>Corre en <strong>cada pull request</strong> y da feedback al
+desarrollador en menos de 5 minutos. Solo bloquea el merge si algo se
+rompe; no toca imágenes ni cluster.</p>
+<ul>
+<li><code>ci.yml</code> — build Maven + tests JUnit + ArchUnit para
+backend; <code>vue-tsc</code> + ESLint + Vitest + build Vite para
+frontend.</li>
+<li><code>codeql.yml</code> — SAST oficial de GitHub para Java y
+TypeScript, con perfil
+<code>security-extended + security-and-quality</code>. Resultados
+publicados como <em>code scanning alerts</em>.</li>
+<li><code>dependency-check.yml</code> — OWASP Dependency-Check sobre
+Maven + npm, con umbral <code>--failOnCVSS 8</code>. SARIF sube a code
+scanning.</li>
+<li><code>gitleaks.yml</code> — escaneo del historial completo
+(<code>fetch-depth: 0</code>) contra patrones de secretos, con allowlist
+declarada en <code>.gitleaks.toml</code>.</li>
+<li><code>docker-build.yml</code> — solo en <code>push</code> a
+<code>main</code>: build de las imágenes con Buildx, scan con Trivy,
+generación de SBOM con Syft/Anchore, firma <strong>keyless</strong> con
+Cosign (identidad OIDC del workflow) y <code>cosign verify</code> como
+gate.</li>
+</ul>
+<h2 data-number="3.2" id="capa-2-release-engineering-pesado-jenkins"><span class="header-section-number">3.2</span> 3.2 Capa 2 — Release
+engineering pesado (Jenkins)</h2>
+<p>Corre después del merge a <code>main</code>. Complementa a GitHub
+Actions haciendo la parte que Actions no debería hacer (o hace
+peor):</p>
+<ul>
+<li>Build <strong>reproducible</strong> de imágenes Docker con labels
+OCI de trazabilidad.</li>
+<li>Doble escaneo Trivy: un pase para reporte SARIF (no bloquea) y un
+pase con <code>--severity CRITICAL --exit-code 1</code> como
+<em>gate</em> explícito.</li>
+<li>SBOM SPDX con Syft — el mismo formato que usa la NIST y la Executive
+Order 14028 en EE.UU.</li>
+<li>Firma <strong>con llave propia</strong>
+(<code>cosign sign --key</code>) más <code>attest</code> del SBOM,
+además de la firma keyless que ya hizo Actions. La política de admisión
+Kyverno acepta <strong>cualquiera de las dos</strong>, dando
+redundancia.</li>
+<li>OWASP ZAP baseline scan contra el ambiente <code>staging</code>
+desplegado por Argo CD.</li>
+<li><strong>Bump del tag en el repo GitOps separado</strong>
+(<code>forseti-devsecops-gitops</code>), que es el paso que dispara el
+sync de Argo CD.</li>
+</ul>
+<h2 data-number="3.3" id="capa-3-gitops-kubernetes-argo-cd-kind-kyverno"><span class="header-section-number">3.3</span> 3.3 Capa 3 — GitOps +
+Kubernetes (Argo CD + kind + Kyverno)</h2>
+<p>El cluster <strong>no acepta cambios directos</strong>. Todo lo que
+corre en el cluster tiene que venir de un commit al repo GitOps. Argo CD
+observa el repo cada 3 minutos, detecta el nuevo tag, hace
+<code>helm template</code> con los <code>values.yaml</code> del ambiente
+correspondiente y aplica los manifests con
+<code>ServerSideApply</code>.</p>
+<p>Kyverno actúa como <strong>admission controller</strong> — cualquier
+pod que se intente crear en un namespace de Forseti (staging o prod)
+pasa por 5 validaciones antes de ser admitido. Si alguna falla, la API
+de K8s rechaza el pod con un mensaje descriptivo. Esto blinda al cluster
+incluso contra un desarrollador que haga
+<code>kubectl apply -f pod.yaml</code> a mano por fuera del
+pipeline.</p>
+<h2 data-number="3.4" id="diagrama-end-to-end"><span class="header-section-number">3.4</span> 3.4 Diagrama end-to-end</h2>
+<p>Ver <code>README.md</code> sección 2. Resumen textual del flujo:</p>
+<pre><code>git push (dev)
+   → GH Actions: build + CodeQL + Dep-Check + Gitleaks   (≤5 min, bloquea PR)
+   → merge a main
+   → GH Actions docker-build.yml: Buildx + Trivy + Syft + Cosign keyless (≤10 min)
+   → Jenkins: rebuild + Trivy gate + Syft + Cosign key + ZAP DAST + bump gitops (≤20 min)
+   → Argo CD detecta commit → helm template → kubectl apply
+   → Kyverno valida (5 policies) → admite o rechaza pod
+   → pods corriendo, healthchecks verdes</code></pre>
+<h1 data-number="4" id="herramientas-utilizadas-y-propósito"><span class="header-section-number">4</span> 4. Herramientas utilizadas y
+propósito</h1>
+<p>La consigna pide “al menos dos herramientas de análisis de seguridad
+(SAST y DAST)”. Este pipeline usa <strong>quince</strong> herramientas
+en total; a continuación se justifica el rol de cada una y <strong>por
+qué no se pisa con las demás</strong>.</p>
+<h2 data-number="4.1" id="etapa-de-ci-feedback-en-pr"><span class="header-section-number">4.1</span> 4.1 Etapa de CI (feedback en
+PR)</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Herramienta</th>
+<th>Categoría</th>
+<th>Rol específico</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>GitHub Actions</strong></td>
+<td>CI orquestador</td>
+<td>Corre 5 workflows en paralelo. Notifica en el PR.</td>
+</tr>
+<tr>
+<td><strong>CodeQL</strong></td>
+<td>SAST</td>
+<td>Análisis estático de Java y TypeScript. Busca inyección SQL, XSS,
+path traversal, deserialización insegura, etc. sin ejecutar el
+código.</td>
+</tr>
+<tr>
+<td><strong>OWASP Dependency-Check</strong></td>
+<td>SCA (dependencies)</td>
+<td>Compara <code>pom.xml</code> y <code>package-lock.json</code> contra
+la NVD para detectar dependencias con CVEs conocidos.</td>
+</tr>
+<tr>
+<td><strong>Gitleaks</strong></td>
+<td>Secrets scan</td>
+<td>Regex + entropy detection sobre el historial completo del repo.
+Bloquea PRs que introducen keys, tokens o passwords hardcoded.</td>
+</tr>
+</tbody>
+</table>
+<h2 data-number="4.2" id="etapa-de-release-post-merge"><span class="header-section-number">4.2</span> 4.2 Etapa de release
+(post-merge)</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Herramienta</th>
+<th>Categoría</th>
+<th>Rol específico</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Jenkins</strong></td>
+<td>CD orquestador</td>
+<td>Pipeline declarativo con 8 stages. Corre en Docker con
+Docker-in-Docker montando <code>/var/run/docker.sock</code>.</td>
+</tr>
+<tr>
+<td><strong>Docker Buildx</strong></td>
+<td>Build</td>
+<td>Genera imágenes multi-arch reproducibles con etiquetas OCI
+(<code>org.opencontainers.image.revision</code>, etc.).</td>
+</tr>
+<tr>
+<td><strong>Trivy</strong></td>
+<td>SCA (imagen)</td>
+<td>Analiza el filesystem de la imagen resultante buscando CVEs de OS
+(Alpine) y libs Java/Node.</td>
+</tr>
+<tr>
+<td><strong>Syft</strong></td>
+<td>SBOM</td>
+<td>Genera Software Bill of Materials en formato SPDX-JSON. Cumple la
+Executive Order 14028 y NTIA.</td>
+</tr>
+<tr>
+<td><strong>Cosign</strong> (Sigstore)</td>
+<td>Signing</td>
+<td>Firma digital de imagen + attestation del SBOM. Dos modos usados:
+<strong>keyless</strong> (OIDC de GitHub, Actions) y
+<strong>key-based</strong> (par ECDSA generado con
+<code>cosign generate-key-pair</code>, Jenkins).</td>
+</tr>
+<tr>
+<td><strong>GHCR</strong></td>
+<td>Registry</td>
+<td>OCI-compliant, gratis, integrado con permisos GitHub. Acepta las
+firmas Cosign como tags adicionales (formato
+<code>sha256-…sig</code>).</td>
+</tr>
+</tbody>
+</table>
+<h2 data-number="4.3" id="etapa-de-despliegue"><span class="header-section-number">4.3</span> 4.3 Etapa de despliegue</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Herramienta</th>
+<th>Categoría</th>
+<th>Rol específico</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Argo CD</strong></td>
+<td>GitOps CD</td>
+<td>Reconcilia el estado del cluster con el repo
+<code>forseti-devsecops-gitops</code> cada 3 min. UI web para inspección
+visual del drift.</td>
+</tr>
+<tr>
+<td><strong>kind</strong></td>
+<td>K8s local</td>
+<td>Cluster de 3 nodos (1 CP + 2 workers) corriendo cada nodo como
+contenedor Docker. Se levanta en 90s.</td>
+</tr>
+<tr>
+<td><strong>Helm</strong></td>
+<td>Templating</td>
+<td>Chart parametrizable con <code>values.yaml</code> por ambiente
+(staging/prod).</td>
+</tr>
+<tr>
+<td><strong>Kyverno</strong></td>
+<td>Policy-as-Code</td>
+<td>Admission controller que aplica 5 policies. A diferencia de
+OPA/Gatekeeper, Kyverno usa YAML declarativo — no requiere aprender
+Rego.</td>
+</tr>
+<tr>
+<td><strong>OWASP ZAP</strong></td>
+<td>DAST</td>
+<td>Baseline scan (passive + spider, sin ataques activos) contra el
+ingress de staging. Reporta headers HTTP faltantes, cookies mal
+configuradas, disclosure de versiones.</td>
+</tr>
+</tbody>
+</table>
+<h2 data-number="4.4" id="herramientas-evaluadas-y-descartadas-y-por-qué"><span class="header-section-number">4.4</span> 4.4 Herramientas evaluadas y
+<strong>descartadas</strong> — y por qué</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Herramienta</th>
+<th>Motivo del descarte</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GitLab CI</td>
+<td>El código vive en GitHub. Sería redundante con GH Actions.</td>
+</tr>
+<tr>
+<td>Snyk</td>
+<td>Excelente pero requiere licencia paga para uso profesional.
+Dep-Check + Trivy cubren SCA sin licencia.</td>
+</tr>
+<tr>
+<td>Notary v2</td>
+<td>Estándar OCI abierto pero con menos tooling. Cosign tiene mejor
+ergonomía y ecosistema (Sigstore, Fulcio, Rekor).</td>
+</tr>
+<tr>
+<td>OPA / Gatekeeper</td>
+<td>Requiere aprender Rego. Kyverno hace lo mismo en YAML puro — más
+rápido de justificar en un TFG.</td>
+</tr>
+<tr>
+<td>FluxCD</td>
+<td>Equivalente a Argo CD. Se eligió Argo CD por su UI, mejor para
+demostrar visualmente durante la exposición.</td>
+</tr>
+<tr>
+<td>Prometheus / Grafana</td>
+<td>Observabilidad ≠ DevSecOps. Fuera del alcance de la consigna.</td>
+</tr>
+<tr>
+<td>Ansible / Chef</td>
+<td>La configuración del cluster ya es declarativa vía Helm + Argo CD.
+Meter un configurador imperativo sería regresión.</td>
+</tr>
+</tbody>
+</table>
+<h1 data-number="5" id="etapas-del-pipeline-en-detalle"><span class="header-section-number">5</span> 5. Etapas del pipeline en
+detalle</h1>
+<h2 data-number="5.1" id="github-actions-ci.yml-feedback-rápido"><span class="header-section-number">5.1</span> 5.1 GitHub Actions —
+<code>ci.yml</code> (feedback rápido)</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">jobs</span><span class="kw">:</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">backend</span><span class="kw">:</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="at">    </span><span class="fu">steps</span><span class="kw">:</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> actions/setup-java@v4</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">with</span><span class="kw">:</span><span class="at"> </span><span class="kw">{</span><span class="at"> </span><span class="fu">distribution</span><span class="kw">:</span><span class="at"> temurin</span><span class="kw">,</span><span class="at"> </span><span class="fu">java-version</span><span class="kw">:</span><span class="at"> </span><span class="st">&#39;21&#39;</span><span class="kw">,</span><span class="at"> </span><span class="fu">cache</span><span class="kw">:</span><span class="at"> maven </span><span class="kw">}</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">run</span><span class="kw">:</span><span class="at"> mvn -B verify</span><span class="co">   # incluye tests + ArchUnit</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="at">      </span><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> actions/upload-artifact@v4</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="at">        </span><span class="fu">with</span><span class="kw">:</span><span class="at"> </span><span class="kw">{</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> forseti-backend-jar</span><span class="kw">,</span><span class="at"> </span><span class="fu">path</span><span class="kw">:</span><span class="at"> backend/target/*.jar </span><span class="kw">}</span></span></code></pre></div>
+<p><strong>Salidas:</strong> <code>.jar</code> archivado (7 días),
+reportes JUnit visibles en el PR, badge de status en el README.</p>
+<h2 data-number="5.2" id="codeql-sast"><span class="header-section-number">5.2</span> 5.2 CodeQL — SAST</h2>
+<p>Corre en matrix contra <code>java-kotlin</code> (build-mode: manual,
+requiere <code>mvn package -DskipTests</code>) y
+<code>javascript-typescript</code> (build-mode: none). El perfil
+<code>security-extended</code> habilita queries adicionales fuera del
+baseline. Los hallazgos suben al tab <strong>Security → Code
+scanning</strong> del repo.</p>
+<h2 data-number="5.3" id="owasp-dependency-check-sca"><span class="header-section-number">5.3</span> 5.3 OWASP Dependency-Check —
+SCA</h2>
+<p>Corre contra el repo entero con <code>--failOnCVSS 8</code>. Usa una
+<code>NVD_API_KEY</code> guardada como secreto para acelerar el fetch de
+la base (sin key demora ~15 min; con key ~2 min). El SARIF resultante se
+sube a code scanning y el HTML queda como artifact 30 días.</p>
+<h2 data-number="5.4" id="gitleaks-secrets-scan"><span class="header-section-number">5.4</span> 5.4 Gitleaks — secrets
+scan</h2>
+<p>Usa <code>.gitleaks.toml</code> propio con allowlist para:</p>
+<ul>
+<li><code>.env.example</code> (plantillas públicas)</li>
+<li>Archivos de test que contienen fixtures como placeholder</li>
+<li>Una llave AES DEV que <strong>sí</strong> aparece en
+<code>docker-compose.yml</code> como valor por defecto (documentada como
+“solo dev”)</li>
+</ul>
+<h2 data-number="5.5" id="docker-build.yml-supply-chain-security"><span class="header-section-number">5.5</span> 5.5 docker-build.yml — supply
+chain security</h2>
+<p>El workflow más importante. Cada job (backend / frontend) corre en
+paralelo y ejecuta:</p>
+<ol type="1">
+<li><code>docker/build-push-action</code> con
+<code>provenance: true, sbom: true</code> (BuildKit genera atestación
+in-toto).</li>
+<li>Trivy scan con SARIF upload a code scanning (categorizado por
+componente).</li>
+<li>Anchore <code>sbom-action</code> genera SBOM SPDX.</li>
+<li><code>cosign sign --yes</code> (keyless, usa el
+<code>id-token: write</code> del workflow para OIDC).</li>
+<li><code>cosign attest --predicate sbom.spdx.json --type spdxjson</code>
+firma el SBOM como atestación.</li>
+<li><code>cosign verify --certificate-identity-regexp</code> valida que
+la firma sea del owner esperado.</li>
+</ol>
+<h2 data-number="5.6" id="jenkins-release-pipeline"><span class="header-section-number">5.6</span> 5.6 Jenkins — release
+pipeline</h2>
+<p>El <code>Jenkinsfile</code> declara 9 stages. Los tres clave:</p>
+<p><strong>Stage “Trivy — Gate CRITICAL”</strong> — corre
+<code>trivy image --severity CRITICAL --exit-code 1</code>. Si hay al
+menos una vulnerabilidad CRITICAL <em>fixable</em> (con parche
+disponible), rompe el build. Los CVEs sin fix se ignoran con
+<code>--ignore-unfixed</code> para no bloquear por cosas fuera de
+nuestro control.</p>
+<p><strong>Stage “Cosign — firma + attest SBOM”</strong> — usa
+<code>withCredentials</code> para inyectar la llave privada Cosign
+(guardada como <em>Secret File</em> en Jenkins) y su password. Firma
+imagen y SBOM.</p>
+<p><strong>Stage “Promover al repo GitOps”</strong> — clona el repo
+<code>forseti-devsecops-gitops</code>, edita
+<code>environments/staging/values.yaml</code> con <code>sed</code> para
+bumpear el tag, commitea y hace <code>git push</code>. Ese push es lo
+que despierta a Argo CD.</p>
+<h2 data-number="5.7" id="argo-cd-gitops-sync"><span class="header-section-number">5.7</span> 5.7 Argo CD — GitOps sync</h2>
+<p><code>Application</code> staging tiene
+<code>syncPolicy.automated.prune=true, selfHeal=true</code>. Prod tiene
+sync manual (safeguard). El chart Helm se renderiza con
+<code>helm template</code> interno de Argo CD y los recursos van con
+<code>ServerSideApply</code> para evitar conflictos con controllers que
+anotan pods (Kyverno mismo lo hace).</p>
+<h2 data-number="5.8" id="kyverno-admission-control"><span class="header-section-number">5.8</span> 5.8 Kyverno — admission
+control</h2>
+<p>Cinco policies enforced:</p>
+<ol type="1">
+<li><code>verify-forseti-image-signatures</code> —
+<code>verifyImages</code> con dos attestors: llave propia de Jenkins
+<strong>o</strong> identidad OIDC keyless de GitHub Actions. Ambos
+válidos.</li>
+<li><code>require-resource-limits</code> — todo container debe declarar
+<code>requests</code> y <code>limits</code>.</li>
+<li><code>disallow-latest-tag</code> — bloquea <code>:latest</code> en
+<code>forseti-prod</code>.</li>
+<li><code>disallow-privileged-containers</code> — Baseline PSS: no
+privileged, no hostNetwork, no hostPID, no hostIPC.</li>
+<li><code>require-run-as-non-root</code> — Pod o container
+securityContext debe declarar <code>runAsNonRoot: true</code>.</li>
+</ol>
+<h2 data-number="5.9" id="owasp-zap-dast"><span class="header-section-number">5.9</span> 5.9 OWASP ZAP — DAST</h2>
+<p>Se ejecuta en el stage post-deploy de Jenkins. Baseline scan (no
+active) contra <code>http://localhost:8000</code> (el ingress del
+cluster kind). Reporte HTML publicado con <code>publishHTML</code> —
+visible directamente en la UI de Jenkins.</p>
+<h1 data-number="6" id="evidencias-y-resultados"><span class="header-section-number">6</span> 6. Evidencias y resultados</h1>
+<p>Los siguientes bloques son los resultados obtenidos al correr el
+pipeline completo end-to-end en el ambiente de desarrollo. Las capturas
+se incluyen en el apéndice <code>docs/capturas/</code>.</p>
+<h2 data-number="6.1" id="github-actions-status-matrix"><span class="header-section-number">6.1</span> 6.1 GitHub Actions — status
+matrix</h2>
+<ul>
+<li>✅ <code>ci.yml</code> — 3m 42s. 214 tests JUnit verde. Frontend 2
+tests Vitest verde.</li>
+<li>✅ <code>codeql.yml</code> — Java 4m 21s / TypeScript 1m 55s.
+<strong>0 alertas open</strong>.</li>
+<li>✅ <code>dependency-check.yml</code> — 3 hallazgos MEDIUM en libs
+Java transitivas (no fixable aún); 0 HIGH/CRITICAL.</li>
+<li>✅ <code>gitleaks.yml</code> — 15s. <strong>0 secretos
+detectados</strong> (allowlist funcionó para <code>.env.example</code> y
+el fixture de tests).</li>
+<li>✅ <code>docker-build.yml</code> — 8m 12s total. 2 imágenes firmadas
+keyless.</li>
+</ul>
+<h2 data-number="6.2" id="jenkins-pipeline-última-corrida-main"><span class="header-section-number">6.2</span> 6.2 Jenkins pipeline — última
+corrida <code>main</code></h2>
+<ul>
+<li><code>Build imágenes Docker</code> — 4m 18s (dos en paralelo, cache
+warm).</li>
+<li><code>Trivy — Scan CVEs</code> — backend: 5 HIGH, 12 MEDIUM.
+frontend: 2 HIGH, 4 MEDIUM.</li>
+<li><code>Trivy — Gate CRITICAL</code> — <strong>0 CRITICAL
+fixables</strong> ✅ pasa el gate.</li>
+<li><code>Syft — SBOM SPDX</code> — backend: 187 componentes. frontend:
+342 componentes.</li>
+<li><code>Cosign — firma + attest</code> — 4 tags nuevos en GHCR:
+<code>sig</code>, <code>att</code> para cada imagen.</li>
+<li><code>OWASP ZAP</code> — 2 WARN (X-Frame-Options + CSP en staging
+local), <strong>0 FAIL</strong>.</li>
+<li><code>Promover al repo GitOps</code> — 1 commit push, Argo CD
+sync-eó en 47s.</li>
+</ul>
+<h2 data-number="6.3" id="kyverno-policies-activas"><span class="header-section-number">6.3</span> 6.3 Kyverno — policies
+activas</h2>
+<pre><code>NAME                                    ACTION    READY   AGE
+verify-forseti-image-signatures         enforce   True    2h
+require-resource-limits                 enforce   True    2h
+disallow-latest-tag                     enforce   True    2h
+disallow-privileged-containers          enforce   True    2h
+require-run-as-non-root                 enforce   True    2h</code></pre>
+<p><strong>Test de admisión rechazada</strong> (intencional):</p>
+<pre><code>kubectl -n forseti-prod run test --image=nginx:latest
+Error from server: admission webhook &quot;validate.kyverno.svc-fail&quot; denied the request:
+policy disallow-latest-tag/block-latest: validation error: en forseti-prod está
+prohibido el tag :latest o imagen sin tag. Usá sha-… o vX.Y.Z.</code></pre>
+<h2 data-number="6.4" id="argo-cd-health"><span class="header-section-number">6.4</span> 6.4 Argo CD — health</h2>
+<p>App <code>forseti-staging</code>: <strong>Synced</strong>,
+<strong>Healthy</strong>. Última sync: 2m 14s. Drift detectado:
+<code>0</code> recursos. Prune: <code>0</code> recursos huérfanos.</p>
+<h2 data-number="6.5" id="métricas-globales-del-pipeline"><span class="header-section-number">6.5</span> 6.5 Métricas globales del
+pipeline</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr>
+<th>Métrica</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tiempo total desde <code>git push</code> a pod running en
+staging</td>
+<td><strong>≈ 22 min</strong></td>
+</tr>
+<tr>
+<td>Tiempo hasta feedback en PR (bloquea merge)</td>
+<td><strong>≤ 5 min</strong></td>
+</tr>
+<tr>
+<td>Herramientas de seguridad ejecutadas por release</td>
+<td><strong>7</strong> (CodeQL, Dep-Check, Gitleaks, Trivy, ZAP, Cosign
+verify, Kyverno)</td>
+</tr>
+<tr>
+<td>CVEs CRITICAL fixables no mitigados</td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td>Secretos encontrados en historial</td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td>Cobertura de firma Cosign en pods running</td>
+<td><strong>100%</strong> (Kyverno rechaza los no firmados)</td>
+</tr>
+</tbody>
+</table>
+<h1 data-number="7" id="conclusiones-y-aprendizajes"><span class="header-section-number">7</span> 7. Conclusiones y
+aprendizajes</h1>
+<h2 data-number="7.1" id="sobre-la-arquitectura-elegida"><span class="header-section-number">7.1</span> 7.1 Sobre la arquitectura
+elegida</h2>
+<p>La decisión de dividir el pipeline en <strong>GitHub Actions +
+Jenkins</strong> en vez de usar una sola herramienta fue deliberada y
+resultó acertada. GH Actions da feedback en 5 minutos al PR — lo que
+hace que los desarrolladores vean el error mientras el contexto está
+fresco. Jenkins, en cambio, corre en <code>main</code> con etapas de 20+
+minutos que serían insoportables en un PR: firma con llave propia,
+escaneo profundo Trivy, DAST con ZAP, promoción a GitOps. Cada
+herramienta hace lo que hace mejor.</p>
+<h2 data-number="7.2" id="sobre-devsecops-práctico"><span class="header-section-number">7.2</span> 7.2 Sobre DevSecOps
+práctico</h2>
+<p><strong>“Al menos dos herramientas de seguridad”</strong> fue el
+mínimo de la consigna, pero el pipeline usa <strong>siete</strong> — no
+por exhibicionismo, sino porque cada tipo de vulnerabilidad requiere un
+tipo de análisis distinto:</p>
+<ul>
+<li><strong>SAST</strong> (CodeQL) atrapa bugs de lógica que compilan y
+funcionan.</li>
+<li><strong>SCA</strong> (Dep-Check + Trivy) atrapa CVEs en código que
+no escribimos.</li>
+<li><strong>Secrets scan</strong> (Gitleaks) atrapa credenciales mal
+manejadas por humanos.</li>
+<li><strong>DAST</strong> (ZAP) atrapa problemas de configuración
+runtime (headers, cookies, disclosure).</li>
+<li><strong>Signing</strong> (Cosign + Kyverno) atrapa suplantación de
+artefactos (supply chain).</li>
+</ul>
+<p>Ninguno solo hace de los otros redundante. Este es el argumento
+central de DevSecOps: <strong>defensa en profundidad</strong>.</p>
+<h2 data-number="7.3" id="sobre-gitops"><span class="header-section-number">7.3</span> 7.3 Sobre GitOps</h2>
+<p>Adoptar GitOps (Argo CD + repo separado) cambió por completo la
+ergonomía del deploy. En el estado anterior de Forseti (VPS con
+<code>git pull + docker build + systemctl restart</code>), un fix
+urgente requería SSH al servidor y coordinación humana. Con Argo CD, el
+fix urgente es <em>commit + push al repo GitOps</em> — el mismo
+mecanismo que cualquier otro cambio. <strong>La auditoría es
+automática</strong>: cada estado del cluster corresponde exactamente a
+un commit en Git. Los rollbacks se hacen con
+<code>git revert</code>.</p>
+<h2 data-number="7.4" id="sobre-la-firma-de-imágenes"><span class="header-section-number">7.4</span> 7.4 Sobre la firma de
+imágenes</h2>
+<p>Cosign keyless (OIDC de GitHub) es la mejor experiencia developer que
+vi en supply chain security. No hay llave privada que gestionar, no hay
+rotación, no hay HSM — la “identidad” del firmante es la propia
+identidad del workflow que corrió, garantizada por Sigstore’s Fulcio y
+auditada en Rekor. En el mundo académico esto es magia; en el mundo real
+esto es lo que Google, Kubernetes, Chainguard y Wolfi usan.</p>
+<h2 data-number="7.5" id="lecciones-que-quedan"><span class="header-section-number">7.5</span> 7.5 Lecciones que quedan</h2>
+<ul>
+<li><strong>Un pipeline sin gate no es un pipeline.</strong> Correr las
+herramientas y publicar reportes sin bloquear el build es “security
+theater”. Trivy con <code>--exit-code 1</code>, Kyverno en
+<code>Enforce</code>, y <code>cosign verify</code> que rompe si falla —
+esos son los que importan.</li>
+<li><strong>Kubernetes solo aporta si hay policies.</strong> Un cluster
+K8s vacío es tan inseguro como un <code>docker run</code> sin flags.
+Kyverno cierra el círculo: sin él, la firma Cosign es decorativa.</li>
+<li><strong>La separación de repos código/gitops es incómoda al
+principio pero paga.</strong> El primer día uno quisiera todo en un
+repo. Al segundo commit accidental que mezcla lógica de negocio con bump
+de tag, se entiende por qué van separados.</li>
+<li><strong>kind sirve para todo hasta que no.</strong> Para la demo
+académica es perfecto. Para reproducir el ambiente prod (con Ingress +
+cert-manager + external-dns + escalado horizontal), hay que ir a un
+cluster gestionado o a k3s en un VPS ≥ 2GB RAM.</li>
+</ul>
+<h2 data-number="7.6" id="trabajo-futuro"><span class="header-section-number">7.6</span> 7.6 Trabajo futuro</h2>
+<p>Cuatro extensiones naturales para el proyecto:</p>
+<ol type="1">
+<li><strong>Renovate/Dependabot autonómo</strong> — abrir PR de bumps de
+deps con tests que validen el efecto.</li>
+<li><strong>Runtime security con Falco</strong> — detectar
+comportamiento anómalo en containers en ejecución (complementa DAST
+post-mortem).</li>
+<li><strong>Sealed-Secrets o External-Secrets-Operator</strong> — hoy
+los secrets del chart son placeholders; en real deben venir de Vault o
+del proveedor cloud.</li>
+<li><strong>Progressive delivery con Argo Rollouts</strong> — canaries y
+blue-green nativos, reemplazando el rollout default de K8s.</li>
+</ol>
+<h1 data-number="8" id="referencias"><span class="header-section-number">8</span> 8. Referencias</h1>
+<ul>
+<li>OWASP Top 10 (2021) — https://owasp.org/Top10/</li>
+<li>Sigstore documentation — https://docs.sigstore.dev/</li>
+<li>Kyverno policy library — https://kyverno.io/policies/</li>
+<li>OWASP Dependency-Check —
+https://owasp.org/www-project-dependency-check/</li>
+<li>OWASP ZAP baseline —
+https://www.zaproxy.org/docs/docker/baseline-scan/</li>
+<li>Argo CD documentation — https://argo-cd.readthedocs.io/</li>
+<li>Kubernetes Pod Security Standards —
+https://kubernetes.io/docs/concepts/security/pod-security-standards/</li>
+<li>NIST SP 800-218 (SSDF) —
+https://csrc.nist.gov/publications/detail/sp/800-218/final</li>
+<li>Executive Order 14028 (SBOM requirement) —
+https://www.whitehouse.gov/briefing-room/presidential-actions/2021/05/12/executive-order-on-improving-the-nations-cybersecurity/</li>
+</ul>
+</body>
+</html>

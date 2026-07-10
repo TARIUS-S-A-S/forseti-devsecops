@@ -36,7 +36,9 @@ spec:
                       # Reemplazar tras ejecutar: cosign generate-key-pair
                       # y subir cosign.pub a este policy
                       -----END PUBLIC KEY-----
-                # Firma GH Actions (keyless / OIDC)
+                # Firma GH Actions (keyless / OIDC vía Sigstore)
                 - keyless:
                     subject: "https://github.com/TARIUS-S-A-S/forseti-devsecops/*"
                     issuer: "https://token.actions.githubusercontent.com"
+                    rekor:
+                      url: https://rekor.sigstore.dev

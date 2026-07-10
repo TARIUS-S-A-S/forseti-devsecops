@@ -14,7 +14,7 @@ kubernetes-cli
 timestamper
 ansicolor
 warnings-ng
-html-publisher
+htmlpublisher
 build-timeout
 matrix-auth
 ws-cleanup

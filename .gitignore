@@ -48,3 +48,4 @@ argocd-initial-password.txt
 # ─── Jenkins ──────────────────────────────────────────────────────────
 jenkins/data/
 jenkins_home/
+node_modules

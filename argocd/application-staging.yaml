@@ -4,20 +4,22 @@ metadata:
   name: forseti-staging
   namespace: argocd
   finalizers:
-    - resources-finalizer.argocd.argoproj.io
+    - resources-finalizer.argocd.argoproj.io/foreground
 spec:
   project: forseti
-  source:
-    repoURL: https://github.com/TARIUS-S-A-S/forseti-devsecops-gitops.git
-    targetRevision: main
-    path: environments/staging
-    helm:
-      valueFiles:
-        - values.yaml
-      # También podemos pasar chart values inline si es necesario
-      # parameters:
-      #   - name: image.backendTag
-      #     value: "sha-abc1234"
+  # Multiple sources: chart en un repo, values en otro (Argo CD >=2.6)
+  sources:
+    # Fuente 1: el Helm chart (repo de código)
+    - repoURL: https://github.com/TARIUS-S-A-S/forseti-devsecops.git
+      targetRevision: main
+      path: helm/forseti
+      helm:
+        valueFiles:
+          - $values/environments/staging/values.yaml
+    # Fuente 2: los values (repo GitOps — SOURCE OF TRUTH)
+    - repoURL: https://github.com/TARIUS-S-A-S/forseti-devsecops-gitops.git
+      targetRevision: main
+      ref: values
   destination:
     server: https://kubernetes.default.svc
     namespace: forseti-staging

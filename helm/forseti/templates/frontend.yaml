@@ -29,7 +29,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: frontend
-          image: "{{ .Values.image.registry }}/{{ .Values.image.repository }}/frontend:{{ .Values.image.frontendTag }}"
+          image: {{ .Values.frontend.fullImage | default (printf "%s/%s/frontend:%s" .Values.image.registry .Values.image.repository .Values.image.frontendTag) | quote }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 80
