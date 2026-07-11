@@ -1,0 +1,55 @@
+═══════════════════════════════════════════════════════════════════
+  FORSETI DEVSECOPS — Evidencia de ejecución
+  Fecha: 2026-07-10 19:30:29
+═══════════════════════════════════════════════════════════════════
+
+── kubectl get nodes ──
+NAME                    STATUS   ROLES           AGE   VERSION
+forseti-control-plane   Ready    control-plane   90m   v1.36.1
+forseti-worker          Ready    <none>          89m   v1.36.1
+forseti-worker2         Ready    <none>          89m   v1.36.1
+
+── kubectl -n argocd get app ──
+NAME              SYNC STATUS   HEALTH STATUS
+forseti-staging   Synced        Healthy
+
+── kubectl get cpol ──
+NAME                              ADMISSION   BACKGROUND   READY   AGE   MESSAGE
+disallow-latest-tag               true        true         True    76m   Ready
+disallow-privileged-containers    true        true         True    76m   Ready
+require-resource-limits           true        true         True    76m   Ready
+require-run-as-non-root           true        true         True    76m   Ready
+verify-forseti-image-signatures   true        true         True    76m   Ready
+
+── kubectl -n forseti-staging get all ──
+NAME                                    READY   STATUS    RESTARTS   AGE
+pod/forseti-backend-56f9847c9b-c824n    1/1     Running   0          37m
+pod/forseti-frontend-587b757856-t2wwd   1/1     Running   0          44m
+pod/forseti-postgres-0                  1/1     Running   0          45m
+
+NAME                       TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+service/forseti-backend    ClusterIP   10.96.130.244   <none>        8080/TCP   78m
+service/forseti-frontend   ClusterIP   10.96.197.116   <none>        80/TCP     78m
+service/forseti-postgres   ClusterIP   10.96.169.126   <none>        5432/TCP   78m
+
+NAME                               READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/forseti-backend    1/1     1            1           78m
+deployment.apps/forseti-frontend   1/1     1            1           78m
+
+NAME                                          DESIRED   CURRENT   READY   AGE
+replicaset.apps/forseti-backend-56f9847c9b    1         1         1       37m
+replicaset.apps/forseti-backend-7488585bc5    0         0         0       60m
+replicaset.apps/forseti-backend-df4bfb8fc     0         0         0       78m
+replicaset.apps/forseti-frontend-587b757856   1         1         1       44m
+replicaset.apps/forseti-frontend-6b77fc5fb    0         0         0       60m
+replicaset.apps/forseti-frontend-6cfccc459b   0         0         0       78m
+
+NAME                                READY   AGE
+statefulset.apps/forseti-postgres   1/1     45m
+
+── docker ps ──
+NAMES                   IMAGE                   STATUS             PORTS
+forseti-jenkins         forseti-jenkins:local   Up About an hour   0.0.0.0:50000->50000/tcp, [::]:50000->50000/tcp, 0.0.0.0:8090->8080/tcp, [::]:8090->8080/tcp
+forseti-control-plane   kindest/node:v1.36.1    Up 2 hours         0.0.0.0:8000->80/tcp, 0.0.0.0:8443->443/tcp, 127.0.0.1:58249->6443/tcp
+forseti-worker          kindest/node:v1.36.1    Up 2 hours         
+forseti-worker2         kindest/node:v1.36.1    Up 2 hours         
