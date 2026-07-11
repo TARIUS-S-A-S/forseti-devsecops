@@ -164,3 +164,11 @@ forseti-devsecops/
 
 Este código deriva del producto **Forseti** de **TARIUS S.A.S.** — se libera como **demo académico** bajo MIT.
 La lógica de firma XAdES-BES contra SRI Ecuador es dominio público (Anexo 14 SRI v2.26).
+
+## Estrategia de ramas
+
+Ver [`docs/BRANCHING.md`](docs/BRANCHING.md) para la separación CI vs CD por rama:
+
+- `main` → CD completo (Trivy + Cosign + push GHCR + Jenkins release + prod)
+- `dev` → CI + auto-deploy a staging
+- `feature/*` → solo CI en el PR
