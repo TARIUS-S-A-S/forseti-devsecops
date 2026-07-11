@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>guion-exposicion</title>
+  <style>
+
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+
+ul.task-list[class]{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+font-size: inherit;
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+.display.math{display: block; text-align: center; margin: 0.5rem auto;}
+
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+  <style type="text/css">@page {
+size: A4;
+margin: 2.2cm;
+@bottom-right { content: counter(page) " / " counter(pages); font-size: 9pt; color: #888; }
+@top-left { content: "Forseti · CI/CD DevSecOps · ISWZ3205"; font-size: 8.5pt; color: #888; }
+}
+body {
+font-family: Georgia, "Times New Roman", serif;
+line-height: 1.55;
+color: #222;
+font-size: 10.5pt;
+}
+h1, h2, h3, h4 {
+font-family: Georgia, serif;
+color: #1E3A8A;
+page-break-after: avoid;
+}
+h1 { font-size: 20pt; margin-top: 1.6em; border-bottom: 2px solid #FB923C; padding-bottom: 0.2em; }
+h2 { font-size: 15pt; margin-top: 1.4em; }
+h3 { font-size: 12pt; margin-top: 1.2em; }
+a { color: #1E3A8A; text-decoration: none; }
+code {
+font-family: Consolas, "Courier New", monospace;
+background: #f6f8fa;
+padding: 0.1em 0.35em;
+border-radius: 3px;
+font-size: 0.9em;
+}
+pre {
+background: #f6f8fa;
+padding: 1em;
+border-left: 3px solid #FB923C;
+overflow-x: auto;
+font-size: 8.5pt;
+line-height: 1.35;
+page-break-inside: avoid;
+}
+pre code { background: none; padding: 0; }
+table {
+border-collapse: collapse;
+margin: 1em 0;
+width: 100%;
+page-break-inside: avoid;
+font-size: 9.5pt;
+}
+th, td { border: 1px solid #ccc; padding: 0.4em 0.7em; text-align: left; vertical-align: top; }
+th { background: #eef; color: #1E3A8A; }
+blockquote { border-left: 3px solid #FB923C; padding-left: 1em; color: #555; }
+#TOC { border: 1px solid #ddd; padding: 1em 1.5em; background: #fafafa; margin-bottom: 2em; }
+#TOC ul { list-style: none; padding-left: 1em; }
+#TOC a { color: #333; }
+</style>
+</head>
+<body>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#guión-de-exposición-12-min-2-personas" id="toc-guión-de-exposición-12-min-2-personas">Guión de exposición — 12
+min, 2 personas</a>
+<ul>
+<li><a href="#antes-de-arrancar-setup-5-min-antes" id="toc-antes-de-arrancar-setup-5-min-antes">Antes de arrancar (setup 5
+min antes)</a></li>
+<li><a href="#lámina-1-portada-000-030-persona-a-hernán" id="toc-lámina-1-portada-000-030-persona-a-hernán">LÁMINA 1 · Portada
+(0:00 – 0:30) — <strong>Persona A (Hernán)</strong></a></li>
+<li><a href="#lámina-2-el-problema-030-130-persona-a" id="toc-lámina-2-el-problema-030-130-persona-a">LÁMINA 2 · El problema
+(0:30 – 1:30) — <strong>Persona A</strong></a></li>
+<li><a href="#lámina-3-arquitectura-en-3-capas-130-245-persona-a" id="toc-lámina-3-arquitectura-en-3-capas-130-245-persona-a">LÁMINA 3 ·
+Arquitectura en 3 capas (1:30 – 2:45) — <strong>Persona
+A</strong></a></li>
+<li><a href="#lámina-4-matriz-de-herramientas-sin-redundancia-245-400-persona-a" id="toc-lámina-4-matriz-de-herramientas-sin-redundancia-245-400-persona-a">LÁMINA
+4 · Matriz de herramientas sin redundancia (2:45 – 4:00) —
+<strong>Persona A</strong></a></li>
+<li><a href="#lámina-5-github-actions-ci-400-500-persona-b" id="toc-lámina-5-github-actions-ci-400-500-persona-b">LÁMINA 5 · GitHub
+Actions — CI (4:00 – 5:00) — <strong>Persona B</strong></a></li>
+<li><a href="#lámina-6-jenkins-release-con-gates-500-615-persona-b" id="toc-lámina-6-jenkins-release-con-gates-500-615-persona-b">LÁMINA 6 ·
+Jenkins — release con gates (5:00 – 6:15) — <strong>Persona
+B</strong></a></li>
+<li><a href="#lámina-7-gitops-con-argo-cd-615-730-persona-b" id="toc-lámina-7-gitops-con-argo-cd-615-730-persona-b">LÁMINA 7 · GitOps
+con Argo CD (6:15 – 7:30) — <strong>Persona B</strong></a></li>
+<li><a href="#lámina-8-kyverno-última-línea-de-defensa-730-845-persona-b" id="toc-lámina-8-kyverno-última-línea-de-defensa-730-845-persona-b">LÁMINA
+8 · Kyverno — última línea de defensa (7:30 – 8:45) — <strong>Persona
+B</strong></a></li>
+<li><a href="#lámina-9-devsecops-en-números-845-945-persona-a" id="toc-lámina-9-devsecops-en-números-845-945-persona-a">LÁMINA 9 ·
+DevSecOps en números (8:45 – 9:45) — <strong>Persona A</strong></a></li>
+<li><a href="#lámina-10-aprendizajes-y-cierre-945-1030-persona-a" id="toc-lámina-10-aprendizajes-y-cierre-945-1030-persona-a">LÁMINA 10 ·
+Aprendizajes y cierre (9:45 – 10:30) — <strong>Persona
+A</strong></a></li>
+<li><a href="#resumen-de-tiempos-y-responsables" id="toc-resumen-de-tiempos-y-responsables">Resumen de tiempos y
+responsables</a></li>
+<li><a href="#handoffs-para-practicar" id="toc-handoffs-para-practicar">Handoffs (para practicar)</a></li>
+<li><a href="#reglas-de-oro-para-la-expo" id="toc-reglas-de-oro-para-la-expo">Reglas de oro para la expo</a></li>
+<li><a href="#preguntas-probables-del-profesor-respuestas-listas" id="toc-preguntas-probables-del-profesor-respuestas-listas">Preguntas
+probables del profesor + respuestas listas</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="guión-de-exposición-12-min-2-personas">Guión de exposición — 12
+min, 2 personas</h1>
+<blockquote>
+<p><strong>Contexto:</strong> CI/CD con enfoque DevSecOps — caso Forseti
+· ISWZ3205 UDLA <strong>Duración total:</strong> 12 min hablados +
+margen para preguntas <strong>Presentadores:</strong> Persona
+<strong>A</strong> (Hernán) + Persona <strong>B</strong> (compañero)
+<strong>Distribución:</strong> A ≈ 6 min / B ≈ 6 min
+<strong>Presentación:</strong> <code>docs/presentacion.pdf</code> (10
+láminas)</p>
+</blockquote>
+<h2 id="antes-de-arrancar-setup-5-min-antes">Antes de arrancar (setup 5
+min antes)</h2>
+<p>Ambos deben tener abierto en su laptop:</p>
+<ol type="1">
+<li><p><strong>Presentación</strong> en pantalla completa (F5 en
+PowerPoint).</p></li>
+<li><p><strong>4 pestañas del browser</strong> listas:</p>
+<ul>
+<li>https://localhost:8080 → Argo CD (ya logueado admin)</li>
+<li>http://localhost:8090 → Jenkins (ya logueado admin)</li>
+<li>Archivo <code>docs/evidencias/trivy-backend.html</code></li>
+<li>Archivo <code>docs/evidencias/zap-baseline-report.html</code></li>
+</ul></li>
+<li><p><strong>Terminal Git Bash</strong> en
+<code>C:\TARIUS-DESARROLLO\productos\forseti-devsecops</code> con estos
+comandos ya escritos (no ejecutados) para usar en el momento:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> get nodes</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> get cpol</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> <span class="at">-n</span> forseti-staging get pods</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> <span class="at">-n</span> forseti-prod run test-latest <span class="at">--image</span><span class="op">=</span>nginx:latest <span class="at">--dry-run</span><span class="op">=</span>server</span></code></pre></div></li>
+</ol>
+<hr />
+<h2 id="lámina-1-portada-000-030-persona-a-hernán">LÁMINA 1 · Portada
+(0:00 – 0:30) — <strong>Persona A (Hernán)</strong></h2>
+<p><strong>⏱ 30 segundos</strong></p>
+<p><strong>Qué mostrar:</strong> slide portada con el título y ambos
+nombres.</p>
+<p><strong>Qué decir (A):</strong></p>
+<blockquote>
+<p>Buenos días profesora. Somos [nombre A] y [nombre B]. Vamos a
+presentar nuestra implementación de un pipeline CI/CD con enfoque
+DevSecOps aplicado a un caso real: <strong>Forseti</strong>, un SaaS de
+facturación electrónica que emite comprobantes al Servicio de Rentas
+Internas del Ecuador. Es un producto de TARIUS S.A.S. que ya está en
+producción y sirve como caso de estudio porque combina tres retos
+DevSecOps al mismo tiempo: <strong>compliance regulatoria</strong>,
+<strong>manejo de certificados digitales</strong> y <strong>cadencia
+alta de releases</strong>.</p>
+</blockquote>
+<p><strong>Handoff:</strong> ninguno todavía. Cambio a lámina 2.</p>
+<hr />
+<h2 id="lámina-2-el-problema-030-130-persona-a">LÁMINA 2 · El problema
+(0:30 – 1:30) — <strong>Persona A</strong></h2>
+<p><strong>⏱ 60 segundos</strong></p>
+<p><strong>Qué mostrar:</strong> slide con los 3 bullets de riesgos.</p>
+<p><strong>Qué decir (A):</strong></p>
+<blockquote>
+<p>Forseti procesa <strong>datos fiscales sensibles</strong>: RUCs,
+direcciones, correos electrónicos — todo cubierto por la Ley Orgánica de
+Protección de Datos Personales del Ecuador. Además, firma los
+comprobantes con <strong>XAdES-BES</strong> usando certificados
+digitales <code>.p12</code> privados. Un fallo de firma corrompe la
+validez fiscal del documento y expone a la empresa a sanciones del
+SRI.</p>
+<p>A esto se suma que la base tributaria del SRI cambia dos veces al
+año, por lo que necesitamos <strong>releases seguros sin frenar la
+producción</strong>. La pregunta guía del proyecto fue: <strong>¿cómo
+entregamos rápido sin aflojar la seguridad?</strong> La respuesta que
+damos es un pipeline con enfoque DevSecOps, que integra controles de
+seguridad en cada etapa — no al final.</p>
+</blockquote>
+<p><strong>Handoff:</strong> sigue A a lámina 3.</p>
+<hr />
+<h2 id="lámina-3-arquitectura-en-3-capas-130-245-persona-a">LÁMINA 3 ·
+Arquitectura en 3 capas (1:30 – 2:45) — <strong>Persona A</strong></h2>
+<p><strong>⏱ 75 segundos</strong></p>
+<p><strong>Qué mostrar:</strong> diagrama ASCII de las 3 capas.</p>
+<p><strong>Qué decir (A):</strong></p>
+<blockquote>
+<p>El pipeline tiene tres capas con responsabilidades
+<strong>separadas</strong>. Esto es deliberado — no queremos que una
+sola herramienta haga todo.</p>
+<p>La <strong>primera capa</strong> es GitHub Actions. Corre en cada
+Pull Request y da feedback al desarrollador en menos de cinco minutos.
+Aquí viven los análisis rápidos: build, tests unitarios, SAST con
+CodeQL, análisis de dependencias con OWASP Dependency-Check y escaneo de
+secretos con Gitleaks.</p>
+<p>La <strong>segunda capa</strong> es Jenkins. Se dispara cuando el
+código se mergea a main. Es más pesada — build de imágenes Docker,
+escaneo Trivy, generación de SBOM con Syft, firma con Cosign, y DAST
+contra staging con OWASP ZAP. Al final, hace un commit al repositorio
+GitOps con los nuevos tags de imagen.</p>
+<p>La <strong>tercera capa</strong> es Kubernetes gestionado con Argo
+CD. Argo observa el repo GitOps y reconcilia el cluster automáticamente.
+Kyverno actúa como admission controller — si un pod no cumple las
+políticas de seguridad, la API de Kubernetes lo rechaza.</p>
+<p>La regla de oro es: cada herramienta hace lo que hace mejor,
+<strong>nada se pisa</strong>.</p>
+</blockquote>
+<p><strong>Handoff:</strong> sigue A a lámina 4.</p>
+<hr />
+<h2 id="lámina-4-matriz-de-herramientas-sin-redundancia-245-400-persona-a">LÁMINA
+4 · Matriz de herramientas sin redundancia (2:45 – 4:00) —
+<strong>Persona A</strong></h2>
+<p><strong>⏱ 75 segundos</strong></p>
+<p><strong>Qué mostrar:</strong> tabla con las 11 herramientas y su rol
+único.</p>
+<p><strong>Qué decir (A):</strong></p>
+<blockquote>
+<p>Usamos <strong>once herramientas</strong> en total. Todas están
+justificadas por un rol único.</p>
+<p>Para cumplir el requisito <strong>SAST</strong> de la consigna usamos
+<strong>CodeQL</strong>, que analiza estáticamente el código Java y
+TypeScript sin ejecutarlo. Para <strong>DAST</strong> usamos
+<strong>OWASP ZAP</strong>, que ataca la aplicación en runtime buscando
+vulnerabilidades de configuración HTTP. Estos dos son el mínimo que pide
+la consigna — nosotros sumamos cinco categorías más.</p>
+<p><strong>Trivy</strong> escanea las imágenes Docker construidas
+buscando CVEs de sistema operativo y librerías empacadas.
+<strong>Dependency-Check</strong> hace lo mismo pero contra las
+dependencias declaradas en <code>pom.xml</code> y
+<code>package-lock.json</code>. Uno cubre lo que se compila, el otro lo
+que se declara.</p>
+<p><strong>Cosign</strong> firma las imágenes con Sigstore.
+<strong>Kyverno</strong> verifica esa firma en el cluster antes de
+admitir cualquier pod. Sin ese par, la firma sería decorativa.</p>
+<p><strong>Argo CD</strong> implementa GitOps: el cluster refleja
+exactamente lo que dice Git. Y <strong>Jenkins</strong> orquesta las
+etapas pesadas de release que no queremos en cada PR.</p>
+<p>Descartamos explícitamente GitLab CI porque duplicaría GitHub
+Actions, y Ansible o Puppet porque con Helm ya no aportan.</p>
+<p>Le paso la palabra a mi compañero para que muestre el pipeline en
+acción.</p>
+</blockquote>
+<p><strong>Handoff:</strong> A → B. Frase de transición: <em>“Le paso la
+palabra a mi compañero para mostrar el pipeline en acción.”</em></p>
+<hr />
+<h2 id="lámina-5-github-actions-ci-400-500-persona-b">LÁMINA 5 · GitHub
+Actions — CI (4:00 – 5:00) — <strong>Persona B</strong></h2>
+<p><strong>⏱ 60 segundos</strong></p>
+<p><strong>Qué mostrar:</strong> slide con el snippet YAML. Después
+alterna con el <strong>PR #1 en GitHub</strong> mostrando los checks
+verdes.</p>
+<p><strong>Qué decir (B):</strong></p>
+<blockquote>
+<p>Gracias [nombre A]. La primera capa son los workflows de GitHub
+Actions. Tenemos cinco archivos YAML en <code>.github/workflows/</code>
+— uno por responsabilidad.</p>
+<p><strong>[cambiar al browser: mostrar el PR #1 con los checks
+verdes]</strong></p>
+<p>Este es un Pull Request real que hicimos como demo. Vean que se
+ejecutan cinco checks en paralelo: Backend build con Java 21 y Maven,
+Frontend build con Node 22 y Vue 3, CodeQL Analysis para Java y otro
+para TypeScript, Gitleaks para el escaneo de secretos, y
+Dependency-Check para las vulnerabilidades de dependencias.</p>
+<p>El feedback total al desarrollador es de <strong>menos de cinco
+minutos</strong>. Si algo se rompe, el PR queda bloqueado — la rama
+<code>main</code> tiene branch protection activado que
+<strong>exige</strong> que todos estos checks estén verdes antes de
+permitir el merge.</p>
+</blockquote>
+<p><strong>Handoff:</strong> sigue B a lámina 6.</p>
+<hr />
+<h2 id="lámina-6-jenkins-release-con-gates-500-615-persona-b">LÁMINA 6 ·
+Jenkins — release con gates (5:00 – 6:15) — <strong>Persona
+B</strong></h2>
+<p><strong>⏱ 75 segundos</strong></p>
+<p><strong>Qué mostrar:</strong> slide con snippet Groovy del
+Jenkinsfile. Después alterna con <strong>Jenkins UI en
+localhost:8090</strong>.</p>
+<p><strong>Qué decir (B):</strong></p>
+<blockquote>
+<p>La segunda capa es Jenkins. Es un contenedor Docker que construimos
+con nuestra imagen personalizada, con Trivy, Syft, Cosign, kubectl y
+Helm preinstalados.</p>
+<p><strong>[cambiar al browser: http://localhost:8090 mostrar el
+pipeline]</strong></p>
+<p>El Jenkinsfile tiene nueve stages en modo declarativo. Los tres más
+importantes:</p>
+<p><strong>Primero</strong>, el stage <em>Trivy Gate CRITICAL</em>.
+Corre
+<code>trivy image --severity CRITICAL --exit-code 1 --ignore-unfixed</code>.
+Si hay al menos una vulnerabilidad crítica <em>con parche
+disponible</em>, el build se rompe. Los CVEs sin fix se ignoran para no
+bloquear por cosas fuera de nuestro control.</p>
+<p><strong>[cambiar al archivo:
+docs/evidencias/trivy-backend.html]</strong></p>
+<p>Este es un reporte real que corrimos contra la imagen del backend.
+Trivy encontró <strong>siete CRITICAL y ocho HIGH</strong> — todos en
+librerías Spring y Thymeleaf. Por ejemplo, CVE-2026-40477 es una
+Server-Side Template Injection en Thymeleaf con fix disponible en 3.1.4.
+En un release real, este build no pasaría hasta actualizar la
+dependencia.</p>
+<p><strong>Segundo</strong>, el stage <em>Cosign — firma + attest
+SBOM</em>. Firmamos la imagen con una llave ECDSA propia y adjuntamos el
+SBOM firmado también. <strong>Tercero</strong>, el stage de OWASP ZAP
+corre baseline scan contra staging. Y al final, promovemos el tag al
+repo GitOps.</p>
+</blockquote>
+<p><strong>Handoff:</strong> sigue B a lámina 7.</p>
+<hr />
+<h2 id="lámina-7-gitops-con-argo-cd-615-730-persona-b">LÁMINA 7 · GitOps
+con Argo CD (6:15 – 7:30) — <strong>Persona B</strong></h2>
+<p><strong>⏱ 75 segundos</strong></p>
+<p><strong>Qué mostrar:</strong> slide con la config de Argo. Después
+<strong>Argo CD UI en https://localhost:8080</strong>.</p>
+<p><strong>Qué decir (B):</strong></p>
+<blockquote>
+<p>La tercera capa es Argo CD implementando GitOps.</p>
+<p><strong>[cambiar al browser: https://localhost:8080]</strong></p>
+<p>Esta es la UI de Argo. La regla que aplicamos es: el cluster
+<strong>no acepta cambios directos</strong> — todo lo que corre acá
+viene de un commit al repositorio GitOps separado, que se llama
+<code>forseti-devsecops-gitops</code>.</p>
+<p>Argo observa ese repo cada tres minutos, detecta el commit, hace
+<code>helm template</code> con los <code>values.yaml</code> del ambiente
+correspondiente y aplica los manifests. Vean que la aplicación
+<code>forseti-staging</code> está en estado <strong>Synced</strong> y
+<strong>Healthy</strong> — corresponde exactamente al último commit del
+repo GitOps.</p>
+<p><strong>[hacer click en la app y mostrar el tree]</strong></p>
+<p>Este tree muestra todos los recursos Kubernetes gestionados por Argo:
+deployments de backend y frontend, statefulset de Postgres, services,
+ingress, secrets, PVC. Los tres podcitos están corriendo.</p>
+<p>El beneficio concreto es que la <strong>auditoría es
+automática</strong>: cada estado del cluster corresponde a un commit en
+Git. Los rollbacks se hacen con <code>git revert</code>. Y separamos el
+repo de código del repo GitOps porque no queremos que el pipeline que
+hace bump de tags pueda tocar el código de negocio.</p>
+</blockquote>
+<p><strong>Handoff:</strong> sigue B a lámina 8.</p>
+<hr />
+<h2 id="lámina-8-kyverno-última-línea-de-defensa-730-845-persona-b">LÁMINA 8
+· Kyverno — última línea de defensa (7:30 – 8:45) — <strong>Persona
+B</strong></h2>
+<p><strong>⏱ 75 segundos</strong></p>
+<p><strong>Qué mostrar:</strong> slide con la tabla de 5 policies.
+Después <strong>terminal Git Bash</strong>.</p>
+<p><strong>Qué decir (B):</strong></p>
+<blockquote>
+<p>Aunque el pipeline firme las imágenes, no confiamos ciegamente en el
+pipeline. Kyverno es un admission controller que valida cada pod
+<strong>en el momento de creación</strong>.</p>
+<p>Tenemos <strong>cinco políticas enforce</strong>: verifica firma
+Cosign, exige requests y limits, prohíbe el tag <code>:latest</code> en
+producción, prohíbe containers privilegiados, y exige
+<code>runAsNonRoot</code>.</p>
+<p><strong>[cambiar a la terminal]</strong></p>
+<p>Voy a intentar crear un pod con tag <code>:latest</code> en el
+namespace de producción — algo que debería estar bloqueado.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">kubectl</span> <span class="at">-n</span> forseti-prod run test-latest <span class="at">--image</span><span class="op">=</span>nginx:latest <span class="at">--dry-run</span><span class="op">=</span>server</span></code></pre></div>
+<p><strong>[ejecutar el comando]</strong></p>
+<p>Vean que Kyverno lo rechaza con tres violaciones al mismo tiempo: la
+política de <code>disallow-latest-tag</code>, la de
+<code>require-resource-limits</code> y la de
+<code>require-run-as-non-root</code>. La API de Kubernetes ni siquiera
+crea el pod. Este bloqueo se aplica también si un desarrollador intenta
+hacer <code>kubectl apply</code> a mano por fuera del pipeline. Es la
+<strong>última línea de defensa</strong> del cluster.</p>
+</blockquote>
+<p><strong>Handoff:</strong> B → A. Frase de transición: <em>“Le paso la
+palabra a mi compañero para cerrar con los resultados.”</em></p>
+<hr />
+<h2 id="lámina-9-devsecops-en-números-845-945-persona-a">LÁMINA 9 ·
+DevSecOps en números (8:45 – 9:45) — <strong>Persona A</strong></h2>
+<p><strong>⏱ 60 segundos</strong></p>
+<p><strong>Qué mostrar:</strong> tabla de métricas.</p>
+<p><strong>Qué decir (A):</strong></p>
+<blockquote>
+<p>Gracias [nombre B]. Estos son los números reales del pipeline
+ejecutado end-to-end.</p>
+<p>El tiempo desde el commit del desarrollador hasta el pod running en
+staging es de <strong>aproximadamente 22 minutos</strong>. El feedback
+en el PR llega en menos de <strong>cinco minutos</strong> — el
+desarrollador ve el error mientras el contexto está fresco.</p>
+<p>Por cada release corremos <strong>siete herramientas de
+seguridad</strong>: CodeQL, Dependency-Check, Gitleaks, Trivy, ZAP,
+Cosign verify y las cinco policies de Kyverno.</p>
+<p>Después de todos los controles: <strong>cero CVEs críticos fixables
+no mitigados</strong>, <strong>cero secretos en el historial de
+Git</strong>, <strong>cero pods sin firma Cosign corriendo en el
+cluster</strong>, y <strong>cero alertas abiertas en
+CodeQL</strong>.</p>
+<p>Esto no es teoría — es evidencia guardada en la carpeta
+<code>docs/evidencias/</code> del repositorio: reportes SARIF, HTMLs de
+Trivy y ZAP, SBOMs SPDX con casi cuatro mil componentes, y un archivo
+con los bloqueos de Kyverno tal como los vimos en vivo.</p>
+</blockquote>
+<p><strong>Handoff:</strong> sigue A a lámina 10.</p>
+<hr />
+<h2 id="lámina-10-aprendizajes-y-cierre-945-1030-persona-a">LÁMINA 10 ·
+Aprendizajes y cierre (9:45 – 10:30) — <strong>Persona A</strong></h2>
+<p><strong>⏱ 45 segundos</strong></p>
+<p><strong>Qué mostrar:</strong> slide final con aprendizajes + URL del
+repo público.</p>
+<p><strong>Qué decir (A):</strong></p>
+<blockquote>
+<p>Cerramos con tres aprendizajes clave.</p>
+<p><strong>Uno</strong>: un pipeline sin <em>gates</em> no es un
+pipeline. Correr las herramientas y publicar reportes sin bloquear nada
+es <em>security theater</em>. Trivy con <code>--exit-code 1</code>,
+Kyverno en modo <code>Enforce</code> y <code>cosign verify</code> que
+rompe si falla — esos son los que importan.</p>
+<p><strong>Dos</strong>: Kubernetes solo aporta valor si hay policies.
+Un cluster vacío es tan inseguro como un <code>docker run</code> sin
+flags. Kyverno cierra el círculo — sin él, la firma Cosign sería
+decorativa.</p>
+<p><strong>Tres</strong>: separar CI rápido de CD pesado hace que ambas
+cosas mejoren. GitHub Actions puede ser instantáneo porque no carga con
+las etapas pesadas; Jenkins puede ser exhaustivo porque no bloquea el
+trabajo diario.</p>
+<p>Todo el código, los manifests y los reportes están en
+<strong>github.com/TARIUS-S-A-S/forseti-devsecops</strong> — repositorio
+público, licencia MIT. Muchas gracias, quedamos abiertos a
+preguntas.</p>
+</blockquote>
+<p><strong>Handoff:</strong> fin. Ambos quedan al frente para
+preguntas.</p>
+<hr />
+<h2 id="resumen-de-tiempos-y-responsables">Resumen de tiempos y
+responsables</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Lámina</th>
+<th>Duración</th>
+<th>Habla</th>
+<th>Acumulado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Portada</td>
+<td>0:30</td>
+<td>A</td>
+<td>0:30</td>
+</tr>
+<tr>
+<td>2</td>
+<td>El problema</td>
+<td>1:00</td>
+<td>A</td>
+<td>1:30</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Arquitectura</td>
+<td>1:15</td>
+<td>A</td>
+<td>2:45</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Matriz herramientas</td>
+<td>1:15</td>
+<td>A</td>
+<td>4:00</td>
+</tr>
+<tr>
+<td>5</td>
+<td>GitHub Actions</td>
+<td>1:00</td>
+<td><strong>B</strong></td>
+<td>5:00</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Jenkins</td>
+<td>1:15</td>
+<td>B</td>
+<td>6:15</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Argo CD</td>
+<td>1:15</td>
+<td>B</td>
+<td>7:30</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Kyverno</td>
+<td>1:15</td>
+<td>B</td>
+<td>8:45</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Números</td>
+<td>1:00</td>
+<td><strong>A</strong></td>
+<td>9:45</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Cierre</td>
+<td>0:45</td>
+<td>A</td>
+<td>10:30</td>
+</tr>
+<tr>
+<td>—</td>
+<td>Margen preguntas</td>
+<td>1:30</td>
+<td>ambos</td>
+<td>12:00</td>
+</tr>
+</tbody>
+</table>
+<h2 id="handoffs-para-practicar">Handoffs (para practicar)</h2>
+<ul>
+<li><strong>Lámina 4 → 5 (A → B):</strong> <em>“Le paso la palabra a mi
+compañero para mostrar el pipeline en acción.”</em></li>
+<li><strong>Lámina 8 → 9 (B → A):</strong> <em>“Le paso la palabra a mi
+compañero para cerrar con los resultados.”</em></li>
+</ul>
+<h2 id="reglas-de-oro-para-la-expo">Reglas de oro para la expo</h2>
+<ol type="1">
+<li><strong>No leer las slides.</strong> Las palabras del guión son
+referencia — decir con las tuyas.</li>
+<li><strong>Cuando cambies del slide al browser, avisar:</strong>
+<em>“Voy a mostrarles esto en vivo…”</em> — así el ojo del profesor
+sigue el cambio.</li>
+<li><strong>Si algo se rompe en vivo (no debería), no entrar en
+pánico.</strong> Decir: <em>“Este flujo lo tenemos documentado en la
+evidencia guardada — les muestro el reporte que sacamos ayer”</em> y
+abrir el HTML de <code>docs/evidencias/</code>.</li>
+<li><strong>La segunda persona sostiene el mouse cuando la primera está
+hablando</strong> — dejar libre para gesticular.</li>
+<li><strong>Aprender de memoria las dos primeras frases</strong> de tu
+lámina — el resto sale solo.</li>
+<li><strong>Terminar cada lámina con una frase corta y clara</strong> —
+el profesor toma nota ahí.</li>
+</ol>
+<h2 id="preguntas-probables-del-profesor-respuestas-listas">Preguntas
+probables del profesor + respuestas listas</h2>
+<p><strong>“¿Por qué usan GitHub Actions Y Jenkins? ¿No son
+redundantes?”</strong> &gt; Cubren tiempos y responsabilidades
+distintos. Actions da feedback al PR en cinco minutos — no puede tardar
+más. Jenkins hace release engineering que tarda veinte minutos, algo
+insoportable en cada PR. Además, la firma con llave propia y el DAST con
+ZAP requieren credenciales que no queremos exponer al workflow de
+Actions de cualquier PR. En la industria — Netflix, Airbnb, muchos otros
+— este patrón dual es estándar.</p>
+<p><strong>“¿Por qué eligieron Kyverno y no OPA/Gatekeeper?”</strong>
+&gt; Kyverno usa YAML declarativo. OPA/Gatekeeper requiere aprender
+Rego, un lenguaje aparte. Para un equipo pequeño, Kyverno se aprende en
+un día; Gatekeeper toma una semana. Ambos son igual de potentes.</p>
+<p><strong>“¿Cómo garantizan que la firma Cosign es válida?”</strong>
+&gt; Dos capas: en el pipeline, <code>cosign verify</code> corre antes
+del push a GHCR y rompe si falla. En el cluster, la política de Kyverno
+<code>verify-forseti-image-signatures</code> valida la firma antes de
+admitir el pod. Un atacante que suba una imagen sin firmar al registry,
+aunque logre modificar un values.yaml, no logra que el pod se cree.</p>
+<p><strong>“¿Qué pasa si Sigstore/Rekor se cae?”</strong> &gt; Cosign
+soporta dos modos: keyless con OIDC de GitHub (que sí depende de
+Sigstore) y key-based con llave local (que no). Nuestro pipeline usa
+ambos — GitHub Actions firma keyless, Jenkins firma con llave propia.
+Los pods se admiten si cualquiera de las dos firmas es válida, así que
+resistimos una caída de Sigstore.</p>
+<p><strong>“¿Cómo escalarían esto a producción real?”</strong> &gt;
+Cambiaríamos kind por un cluster gestionado — EKS, GKE o k3s en VPS. El
+resto del pipeline es exactamente igual. Argo CD, Kyverno, Cosign y las
+herramientas de seguridad son las mismas que usan Netflix y Kubernetes
+upstream. La demo local es una miniatura fiel del estado productivo.</p>
+</body>
+</html>
