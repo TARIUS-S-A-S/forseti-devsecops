@@ -1,0 +1,196 @@
+2026-07-11T01:03:55Z	INFO	[vuln] Vulnerability scanning is enabled
+2026-07-11T01:03:55Z	INFO	[secret] Secret scanning is enabled
+2026-07-11T01:03:55Z	INFO	[secret] If your scanning is slow, please try '--scanners vuln' to disable secret scanning
+2026-07-11T01:03:55Z	INFO	[secret] Please see https://trivy.dev/docs/v0.72/guide/scanner/secret#recommendation for faster secret detection
+2026-07-11T01:04:13Z	INFO	Detected OS	family="alpine" version="3.23.5"
+2026-07-11T01:04:13Z	INFO	[alpine] Detecting vulnerabilities...	os_version="3.23" repository="3.23" pkg_num=78
+2026-07-11T01:04:13Z	INFO	Number of language-specific files	num=1
+2026-07-11T01:04:13Z	INFO	[jar] Detecting vulnerabilities...
+2026-07-11T01:04:13Z	WARN	Using severities from other vendors for some vulnerabilities. Read https://trivy.dev/docs/v0.72/guide/scanner/vulnerability#severity-selection for details.
+2026-07-11T01:04:14Z	INFO	Table result includes only package filenames. Use '--format json' option to get the full path to the package file.
+
+Report Summary
+
+┌───────────────────────────────────────┬────────┬─────────────────┬─────────┐
+│                Target                 │  Type  │ Vulnerabilities │ Secrets │
+├───────────────────────────────────────┼────────┼─────────────────┼─────────┤
+│ forseti-backend:local (alpine 3.23.5) │ alpine │        5        │    -    │
+├───────────────────────────────────────┼────────┼─────────────────┼─────────┤
+│ app/app.jar                           │  jar   │       35        │    -    │
+└───────────────────────────────────────┴────────┴─────────────────┴─────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+
+forseti-backend:local (alpine 3.23.5)
+=====================================
+Total: 5 (HIGH: 5, CRITICAL: 0)
+
+┌───────────────┬────────────────┬──────────┬────────┬───────────────────┬───────────────┬──────────────────────────────────────────────────────────────┐
+│    Library    │ Vulnerability  │ Severity │ Status │ Installed Version │ Fixed Version │                            Title                             │
+├───────────────┼────────────────┼──────────┼────────┼───────────────────┼───────────────┼──────────────────────────────────────────────────────────────┤
+│ libexpat      │ CVE-2026-56131 │ HIGH     │ fixed  │ 2.8.1-r0          │ 2.8.2-r0      │ libexpat before 2.8.2 lacks handler call depth tracking for  │
+│               │                │          │        │                   │               │ calls to X...                                                │
+│               │                │          │        │                   │               │ https://avd.aquasec.com/nvd/cve-2026-56131                   │
+│               ├────────────────┤          │        │                   │               ├──────────────────────────────────────────────────────────────┤
+│               │ CVE-2026-56407 │          │        │                   │               │ libexpat before 2.8.2 has an integer overflow in doProlog    │
+│               │                │          │        │                   │               │ that is rela...                                              │
+│               │                │          │        │                   │               │ https://avd.aquasec.com/nvd/cve-2026-56407                   │
+│               ├────────────────┤          │        │                   │               ├──────────────────────────────────────────────────────────────┤
+│               │ CVE-2026-56408 │          │        │                   │               │ libexpat before 2.8.2 has an integer overflow in copyString. │
+│               │                │          │        │                   │               │ https://avd.aquasec.com/nvd/cve-2026-56408                   │
+├───────────────┼────────────────┤          │        ├───────────────────┼───────────────┼──────────────────────────────────────────────────────────────┤
+│ p11-kit       │ CVE-2026-2100  │          │        │ 0.25.5-r2         │ 0.26.2-r0     │ p11-kit: NULL dereference via C_DeriveKey with specific NULL │
+│               │                │          │        │                   │               │ parameters                                                   │
+│               │                │          │        │                   │               │ https://avd.aquasec.com/nvd/cve-2026-2100                    │
+├───────────────┤                │          │        │                   │               │                                                              │
+│ p11-kit-trust │                │          │        │                   │               │                                                              │
+│               │                │          │        │                   │               │                                                              │
+│               │                │          │        │                   │               │                                                              │
+└───────────────┴────────────────┴──────────┴────────┴───────────────────┴───────────────┴──────────────────────────────────────────────────────────────┘
+
+Java (jar)
+==========
+Total: 35 (HIGH: 21, CRITICAL: 14)
+
+┌─────────────────────────────────────────────────────────────┬────────────────┬──────────┬────────┬───────────────────┬──────────────────────────────────────────────────────┬──────────────────────────────────────────────────────────────┐
+│                           Library                           │ Vulnerability  │ Severity │ Status │ Installed Version │                    Fixed Version                     │                            Title                             │
+├─────────────────────────────────────────────────────────────┼────────────────┼──────────┼────────┼───────────────────┼──────────────────────────────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ com.fasterxml.jackson.core:jackson-databind (app.jar)       │ CVE-2026-54512 │ HIGH     │ fixed  │ 2.18.2            │ 2.18.8, 3.1.4, 2.21.4                                │ jackson-databind: jackson-databind: Arbitrary code execution │
+│                                                             │                │          │        │                   │                                                      │ via PolymorphicTypeValidator bypass                          │
+│                                                             │                │          │        │                   │                                                      │ https://avd.aquasec.com/nvd/cve-2026-54512                   │
+│                                                             ├────────────────┤          │        │                   ├──────────────────────────────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│                                                             │ CVE-2026-54513 │          │        │                   │ 2.18.8, 2.21.4, 3.1.4                                │ jackson-databind: Jackson-databind: Security bypass allows   │
+│                                                             │                │          │        │                   │                                                      │ arbitrary code execution                                     │
+│                                                             │                │          │        │                   │                                                      │ https://avd.aquasec.com/nvd/cve-2026-54513                   │
+├─────────────────────────────────────────────────────────────┼────────────────┤          │        ├───────────────────┼──────────────────────────────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ org.apache.httpcomponents.client5:httpclient5 (app.jar)     │ CVE-2025-27820 │          │        │ 5.4.1             │ 5.4.3                                                │ org.apache.httpcomponents.client5/httpclient5: Apache        │
+│                                                             │                │          │        │                   │                                                      │ HttpComponents: PSL (Public Suffix List) validation bypass   │
+│                                                             │                │          │        │                   │                                                      │ https://avd.aquasec.com/nvd/cve-2025-27820                   │
+├─────────────────────────────────────────────────────────────┼────────────────┼──────────┤        ├───────────────────┼──────────────────────────────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ org.apache.tika:tika-core (app.jar)                         │ CVE-2025-66516 │ CRITICAL │        │ 3.0.0             │ 3.2.2                                                │ tika-core: tika-parsers: tika-parser-pdf-module: Apache Tika │
+│                                                             │                │          │        │                   │                                                      │ core, Apache Tika parsers, Apache Tika PDF...                │
+│                                                             │                │          │        │                   │                                                      │ https://avd.aquasec.com/nvd/cve-2025-66516                   │
+├─────────────────────────────────────────────────────────────┼────────────────┤          │        ├───────────────────┼──────────────────────────────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ org.apache.tomcat.embed:tomcat-embed-core (app.jar)         │ CVE-2025-24813 │          │        │ 10.1.34           │ 11.0.3, 10.1.35, 9.0.99                              │ tomcat: Potential RCE and/or information disclosure and/or   │
+│                                                             │                │          │        │                   │                                                      │ information corruption with partial PUT...                   │
+│                                                             │                │          │        │                   │                                                      │ https://avd.aquasec.com/nvd/cve-2025-24813                   │
+│                                                             ├────────────────┤          │        │                   ├──────────────────────────────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│                                                             │ CVE-2026-41293 │          │        │                   │ 9.0.118, 10.1.55, 11.0.22                            │ tomcat-coyote: Apache Tomcat: HTTP/2 request headers not     │
+│                                                             │                │          │        │                   │                                                      │ validated                                                    │
+│                                                             │                │          │        │                   │                                                      │ https://avd.aquasec.com/nvd/cve-2026-41293                   │
+│                                                             ├────────────────┤          │        │                   │                                                      ├──────────────────────────────────────────────────────────────┤
+│                                                             │ CVE-2026-43512 │          │        │                   │                                                      │ tomcat-coyote: Apache Tomcat: Authentication bypass via      │
+│                                                             │                │          │        │                   │                                                      │ digest authentication                                        │
+│                                                             │                │          │        │                   │                                                      │ https://avd.aquasec.com/nvd/cve-2026-43512                   │
+│                                                             ├────────────────┤          │        │                   │                                                      ├──────────────────────────────────────────────────────────────┤
+│                                                             │ CVE-2026-43515 │          │        │                   │                                                      │ tomcat-coyote: tomcat: Improper Authorization allows         │
+│                                                             │                │          │        │                   │                                                      │ security bypass                                              │
+│                                                             │                │          │        │                   │                                                      │ https://avd.aquasec.com/nvd/cve-2026-43515                   │
+│                                                             ├────────────────┼──────────┤        │                   ├──────────────────────────────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│                                                             │ CVE-2025-48988 │ HIGH     │        │                   │ 11.0.8, 10.1.42, 9.0.106                             │ tomcat: Apache Tomcat DoS in multipart upload                │
+│                                                             │                │          │        │                   │                                                      │ https://avd.aquasec.com/nvd/cve-2025-48988                   │
+│                                                             ├────────────────┤          │        │                   ├──────────────────────────────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│                                                             │ CVE-2025-48989 │          │        │                   │ 11.0.10, 10.1.44, 9.0.108                            │ tomcat: http/2 "MadeYouReset" DoS attack through HTTP/2      │
+│                                                             │                │          │        │                   │                                                      │ control frames                                               │
+│                                                             │                │          │        │                   │                                                      │ https://avd.aquasec.com/nvd/cve-2025-48989                   │
+│                                                             ├────────────────┤          │        │                   ├──────────────────────────────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│                                                             │ CVE-2025-52520 │          │        │                   │ 11.0.9, 10.1.43, 9.0.107                             │ tomcat: Apache Tomcat denial of service                      │
+│                                                             │                │          │        │                   │                                                      │ https://avd.aquasec.com/nvd/cve-2025-52520                   │
+│                                                             ├────────────────┤          │        │                   ├──────────────────────────────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│                                                             │ CVE-2025-53506 │          │        │                   │ 9.0.107, 10.1.43, 11.0.9                             │ tomcat: Apache Tomcat denial of service                      │
+│                                                             │                │          │        │                   │                                                      │ https://avd.aquasec.com/nvd/cve-2025-53506                   │
+│                                                             ├────────────────┤          │        │                   ├──────────────────────────────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│                                                             │ CVE-2025-55752 │          │        │                   │ 11.0.11, 10.1.45, 9.0.109                            │ tomcat: org.apache.tomcat/tomcat-catalina: Apache Tomcat:    │
+│                                                             │                │          │        │                   │                                                      │ Directory traversal via rewrite with possible RCE            │
+│                                                             │                │          │        │                   │                                                      │ https://avd.aquasec.com/nvd/cve-2025-55752                   │
+│                                                             ├────────────────┤          │        │                   ├──────────────────────────────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│                                                             │ CVE-2026-24734 │          │        │                   │ 11.0.18, 10.1.52, 9.0.115                            │ tomcat: Apache Tomcat: Certificate revocation bypass due to  │
+│                                                             │                │          │        │                   │                                                      │ improper OCSP response validation...                         │
+│                                                             │                │          │        │                   │                                                      │ https://avd.aquasec.com/nvd/cve-2026-24734                   │
+│                                                             ├────────────────┤          │        │                   ├──────────────────────────────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│                                                             │ CVE-2026-24880 │          │        │                   │ 9.0.116, 10.1.52, 11.0.20                            │ Apache Tomcat: Apache Tomcat: HTTP Request/Response          │
+│                                                             │                │          │        │                   │                                                      │ Smuggling via invalid chunk extension                        │
+│                                                             │                │          │        │                   │                                                      │ https://avd.aquasec.com/nvd/cve-2026-24880                   │
+│                                                             ├────────────────┤          │        │                   ├──────────────────────────────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│                                                             │ CVE-2026-34483 │          │        │                   │ 9.0.116, 10.1.54, 11.0.21                            │ Apache Tomcat: Apache Tomcat: Information disclosure due to  │
+│                                                             │                │          │        │                   │                                                      │ improper encoding in JsonAccessLogValve...                   │
+│                                                             │                │          │        │                   │                                                      │ https://avd.aquasec.com/nvd/cve-2026-34483                   │
+│                                                             ├────────────────┤          │        │                   ├──────────────────────────────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│                                                             │ CVE-2026-41284 │          │        │                   │ 9.0.118, 10.1.55, 11.0.22                            │ Allocation of Resources Without Limits or Throttling         │
+│                                                             │                │          │        │                   │                                                      │ vulnerability in ...                                         │
+│                                                             │                │          │        │                   │                                                      │ https://avd.aquasec.com/nvd/cve-2026-41284                   │
+│                                                             ├────────────────┤          │        │                   │                                                      ├──────────────────────────────────────────────────────────────┤
+│                                                             │ CVE-2026-42498 │          │        │                   │                                                      │ tomcat-coyote: Apache Tomcat: Information disclosure due to  │
+│                                                             │                │          │        │                   │                                                      │ HTTP Authentication Header exposure during...                │
+│                                                             │                │          │        │                   │                                                      │ https://avd.aquasec.com/nvd/cve-2026-42498                   │
+│                                                             ├────────────────┤          │        │                   │                                                      ├──────────────────────────────────────────────────────────────┤
+│                                                             │ CVE-2026-43513 │          │        │                   │                                                      │ tomcat-catalina: Apache Tomcat: Improper Handling of Case    │
+│                                                             │                │          │        │                   │                                                      │ Sensitivity in LockOutRealm                                  │
+│                                                             │                │          │        │                   │                                                      │ https://avd.aquasec.com/nvd/cve-2026-43513                   │
+├─────────────────────────────────────────────────────────────┼────────────────┼──────────┤        ├───────────────────┼──────────────────────────────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ org.bouncycastle:bcprov-jdk18on (app.jar)                   │ CVE-2025-14813 │ CRITICAL │        │ 1.78.1            │ 1.80.2, 1.81.1, 1.84                                 │ bouncycastle: BC-JAVA: GOSTCTR implementation unable to      │
+│                                                             │                │          │        │                   │                                                      │ process more than 255 blocks correctly...                    │
+│                                                             │                │          │        │                   │                                                      │ https://avd.aquasec.com/nvd/cve-2025-14813                   │
+├─────────────────────────────────────────────────────────────┼────────────────┼──────────┤        ├───────────────────┼──────────────────────────────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ org.postgresql:postgresql (app.jar)                         │ CVE-2025-49146 │ HIGH     │        │ 42.7.4            │ 42.7.7                                               │ pgjdbc: pgjdbc insecure authentication in channel binding    │
+│                                                             │                │          │        │                   │                                                      │ https://avd.aquasec.com/nvd/cve-2025-49146                   │
+│                                                             ├────────────────┤          │        │                   ├──────────────────────────────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│                                                             │ CVE-2026-42198 │          │        │                   │ 42.7.11                                              │ jdbc.postgresql.org: pgjdbc: Client-side Denial of Service   │
+│                                                             │                │          │        │                   │                                                      │ via malicious SCRAM-SHA-256 authentication                   │
+│                                                             │                │          │        │                   │                                                      │ https://avd.aquasec.com/nvd/cve-2026-42198                   │
+├─────────────────────────────────────────────────────────────┼────────────────┤          │        ├───────────────────┼──────────────────────────────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ org.springframework.boot:spring-boot (app.jar)              │ CVE-2025-22235 │          │        │ 3.4.1             │ 3.3.11, 3.4.5                                        │ org.springframework.boot/spring-boot: Spring Boot            │
+│                                                             │                │          │        │                   │                                                      │ EndpointRequest.to() creates wrong matcher if actuator       │
+│                                                             │                │          │        │                   │                                                      │ endpoint is not...                                           │
+│                                                             │                │          │        │                   │                                                      │ https://avd.aquasec.com/nvd/cve-2025-22235                   │
+│                                                             ├────────────────┤          │        │                   ├──────────────────────────────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│                                                             │ CVE-2026-40973 │          │        │                   │ 4.0.6, 3.5.14                                        │ Spring Boot: Spring Boot: Arbitrary Code Execution and       │
+│                                                             │                │          │        │                   │                                                      │ Session Hijacking via predictable...                         │
+│                                                             │                │          │        │                   │                                                      │ https://avd.aquasec.com/nvd/cve-2026-40973                   │
+├─────────────────────────────────────────────────────────────┼────────────────┼──────────┤        ├───────────────────┼──────────────────────────────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ org.springframework.security:spring-security-core (app.jar) │ CVE-2025-41232 │ CRITICAL │        │ 6.4.2             │ 6.4.6                                                │ Spring-Security: Spring Security authorization bypass for    │
+│                                                             │                │          │        │                   │                                                      │ method security annotations on private methods...            │
+│                                                             │                │          │        │                   │                                                      │ https://avd.aquasec.com/nvd/cve-2025-41232                   │
+│                                                             ├────────────────┼──────────┤        │                   ├──────────────────────────────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│                                                             │ CVE-2025-41248 │ HIGH     │        │                   │ 6.4.10, 6.5.4                                        │ org.springframework.security/spring-security-core: Spring    │
+│                                                             │                │          │        │                   │                                                      │ Security authorization bypass                                │
+│                                                             │                │          │        │                   │                                                      │ https://avd.aquasec.com/nvd/cve-2025-41248                   │
+├─────────────────────────────────────────────────────────────┼────────────────┤          │        │                   ├──────────────────────────────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ org.springframework.security:spring-security-crypto         │ CVE-2025-22228 │          │        │                   │ 6.3.8, 6.4.4, 6.2.10, 6.1.14, 6.0.16, 5.8.18, 5.7.16 │ spring-security-core: Spring Security BCryptPasswordEncoder  │
+│ (app.jar)                                                   │                │          │        │                   │                                                      │ does not enforce maximum password length                     │
+│                                                             │                │          │        │                   │                                                      │ https://avd.aquasec.com/nvd/cve-2025-22228                   │
+├─────────────────────────────────────────────────────────────┼────────────────┼──────────┤        │                   ├──────────────────────────────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ org.springframework.security:spring-security-web (app.jar)  │ CVE-2026-22732 │ CRITICAL │        │                   │ 6.5.9, 7.0.4                                         │ Spring Security: Spring Security: Security policy bypass and │
+│                                                             │                │          │        │                   │                                                      │ information disclosure due to...                             │
+│                                                             │                │          │        │                   │                                                      │ https://avd.aquasec.com/nvd/cve-2026-22732                   │
+├─────────────────────────────────────────────────────────────┼────────────────┼──────────┤        ├───────────────────┼──────────────────────────────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ org.springframework:spring-core (app.jar)                   │ CVE-2025-41249 │ HIGH     │        │ 6.2.1             │ 6.2.11                                               │ org.springframework/spring-core: Spring Framework Annotation │
+│                                                             │                │          │        │                   │                                                      │ Detection Vulnerability                                      │
+│                                                             │                │          │        │                   │                                                      │ https://avd.aquasec.com/nvd/cve-2025-41249                   │
+├─────────────────────────────────────────────────────────────┼────────────────┼──────────┤        ├───────────────────┼──────────────────────────────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ org.thymeleaf:thymeleaf (app.jar)                           │ CVE-2026-40477 │ CRITICAL │        │ 3.1.3.RELEASE     │ 3.1.4.RELEASE                                        │ thymeleaf: Thymeleaf: Server-Side Template Injection via     │
+│                                                             │                │          │        │                   │                                                      │ security bypass in expression execution                      │
+│                                                             │                │          │        │                   │                                                      │ https://avd.aquasec.com/nvd/cve-2026-40477                   │
+│                                                             ├────────────────┤          │        │                   │                                                      ├──────────────────────────────────────────────────────────────┤
+│                                                             │ CVE-2026-40478 │          │        │                   │                                                      │ thymeleaf: Thymeleaf: Server-Side Template Injection via     │
+│                                                             │                │          │        │                   │                                                      │ expression execution bypass                                  │
+│                                                             │                │          │        │                   │                                                      │ https://avd.aquasec.com/nvd/cve-2026-40478                   │
+│                                                             ├────────────────┤          │        │                   ├──────────────────────────────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│                                                             │ CVE-2026-41901 │          │        │                   │ 3.1.5.RELEASE                                        │ Sandboxed Thymeleaf expressions vulnerable to improper       │
+│                                                             │                │          │        │                   │                                                      │ recognition of unauthorized syntax patterns                  │
+│                                                             │                │          │        │                   │                                                      │ https://avd.aquasec.com/nvd/cve-2026-41901                   │
+├─────────────────────────────────────────────────────────────┼────────────────┤          │        │                   ├──────────────────────────────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│ org.thymeleaf:thymeleaf-spring6 (app.jar)                   │ CVE-2026-40477 │          │        │                   │ 3.1.4.RELEASE                                        │ thymeleaf: Thymeleaf: Server-Side Template Injection via     │
+│                                                             │                │          │        │                   │                                                      │ security bypass in expression execution                      │
+│                                                             │                │          │        │                   │                                                      │ https://avd.aquasec.com/nvd/cve-2026-40477                   │
+│                                                             ├────────────────┤          │        │                   │                                                      ├──────────────────────────────────────────────────────────────┤
+│                                                             │ CVE-2026-40478 │          │        │                   │                                                      │ thymeleaf: Thymeleaf: Server-Side Template Injection via     │
+│                                                             │                │          │        │                   │                                                      │ expression execution bypass                                  │
+│                                                             │                │          │        │                   │                                                      │ https://avd.aquasec.com/nvd/cve-2026-40478                   │
+│                                                             ├────────────────┤          │        │                   ├──────────────────────────────────────────────────────┼──────────────────────────────────────────────────────────────┤
+│                                                             │ CVE-2026-41901 │          │        │                   │ 3.1.5.RELEASE                                        │ Sandboxed Thymeleaf expressions vulnerable to improper       │
+│                                                             │                │          │        │                   │                                                      │ recognition of unauthorized syntax patterns                  │
+│                                                             │                │          │        │                   │                                                      │ https://avd.aquasec.com/nvd/cve-2026-41901                   │
+└─────────────────────────────────────────────────────────────┴────────────────┴──────────┴────────┴───────────────────┴──────────────────────────────────────────────────────┴──────────────────────────────────────────────────────────────┘

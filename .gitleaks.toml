@@ -6,19 +6,33 @@ title = "Forseti Gitleaks config"
 [extend]
 useDefault = true
 
-[allowlist]
-description = "Falsos positivos conocidos"
-# .env.example es una plantilla pública
+# ─── Allowlists (formato v8.19+) ─────────────────────────────────────
+[[allowlists]]
+description = "Plantillas públicas, tests y docs — no contienen secretos reales"
 paths = [
   '''\.env\.example$''',
   '''docs/.*''',
   '''backend/src/test/.*''',
   '''README.md''',
+  '''\.gitleaks\.toml$''',
 ]
-# Placeholders literales
+
+[[allowlists]]
+description = "Placeholders literales conocidos + llave DEV pública (documentada)"
+regexTarget = "match"
 regexes = [
   '''<generar-con-openssl-rand-base64-\d+>''',
-  '''KfB\+gReHrhqs1f4dOQRYY31HpGdLOzEFTVonURXqqcM=''',  # llave DEV pública (ejemplo docs)
+  '''KfB\+gReHrhqs1f4dOQRYY31HpGdLOzEFTVonURXqqcM=''',  # llave DEV pública (docs)
   '''forseti_dev_password_change_me''',
   '''forseti_demo_change_me''',
+]
+
+[[allowlists]]
+description = "Nombres de clases Java del JDK — falsos positivos por entropía"
+regexTarget = "match"
+regexes = [
+  '''X509Certificate''',
+  '''PrivateKey''',
+  '''KeyStoreException''',
+  '''CertificateException''',
 ]
