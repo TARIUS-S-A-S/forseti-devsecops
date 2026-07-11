@@ -22,3 +22,14 @@ regexes = [
   '''forseti_dev_password_change_me''',
   '''forseti_demo_change_me''',
 ]
+
+# Falsos positivos por entropía en nombres de clases/API públicas
+[[allowlists]]
+description = "Nombres de clases Java del JDK y stdlib — no son secretos"
+regexTarget = "match"
+regexes = [
+  '''X509Certificate''',
+  '''PrivateKey''',
+  '''KeyStoreException''',
+  '''CertificateException''',
+]
