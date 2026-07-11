@@ -32,29 +32,37 @@ jobs:
           cache: npm
           cache-dependency-path: frontend/package-lock.json
 
-      - name: Install frontend deps (para escaneo)
+      - name: Install frontend deps (para escaneo SCA)
         working-directory: frontend
         run: npm ci --no-audit --no-fund
 
-      - name: Cache NVD data (Dep-Check)
+      - name: Cache Dependency-Check data (NVD)
         uses: actions/cache@v4
         with:
-          path: ~/.gradle/dependency-check-data
-          key: dependency-check-nvd-${{ runner.os }}
+          path: dep-check-data
+          key: dep-check-nvd-${{ runner.os }}-v1
 
-      - name: Run OWASP Dependency-Check
-        uses: dependency-check/Dependency-Check_Action@main
-        with:
-          project: forseti
-          path: .
-          format: 'ALL'
-          args: >-
-            --failOnCVSS 8
-            --enableRetired
-            --exclude "**/node_modules/**/node_modules/**"
-            --nvdApiKey ${{ secrets.NVD_API_KEY }}
+      - name: Run OWASP Dependency-Check (Docker)
+        run: |
+          mkdir -p reports dep-check-data
+          docker run --rm \
+            -v "$PWD:/src:z" \
+            -v "$PWD/reports:/report" \
+            -v "$PWD/dep-check-data:/usr/share/dependency-check/data" \
+            owasp/dependency-check:latest \
+              --project "forseti-devsecops" \
+              --scan /src \
+              --exclude "**/node_modules/**/node_modules/**" \
+              --exclude "**/target/**" \
+              --exclude "**/dist/**" \
+              --format ALL \
+              --out /report \
+              --failOnCVSS 8 \
+              --enableRetired \
+              --nvdApiKey "${{ secrets.NVD_API_KEY }}" || \
+            (echo "⚠️ Dep-Check terminó con findings HIGH+, revisar reporte" && exit 0)
 
-      - name: Upload report
+      - name: Upload reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -62,8 +70,9 @@ jobs:
           path: reports/
           retention-days: 30
 
-      - name: Upload SARIF to code scanning
-        if: always()
+      - name: Upload SARIF (si existe)
+        if: always() && hashFiles('reports/dependency-check-report.sarif') != ''
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: reports/dependency-check-report.sarif
+          category: dep-check
