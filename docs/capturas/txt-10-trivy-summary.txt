@@ -1,0 +1,12 @@
+TRIVY 0.72.0 · Scan contra forseti-backend:local
+Fecha: 2026-07-10 20:31
+
+── Conteo por severidad ──
+  CRITICAL: 7
+  HIGH: 8
+
+── CVEs CRITICAL destacados ──
+  CVE-2026-40477   Thymeleaf Server-Side Template Injection      → fix 3.1.4
+  CVE-2026-22732   Spring Security policy bypass                → fix 6.5.9
+  CVE-2025-41232   Spring Security @PreAuthorize bypass         → fix 6.4.6
+  CVE-2026-40973   Spring Boot RCE + session hijacking          → fix 4.0.6

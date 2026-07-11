@@ -1,0 +1,5 @@
+=== /actuator/health/readiness ===
+{"status":"UP"}
+
+=== /actuator/health/liveness ===
+{"status":"UP"}

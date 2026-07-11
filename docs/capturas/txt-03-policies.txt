@@ -1,0 +1,6 @@
+NAME                              ADMISSION   BACKGROUND   READY   AGE    MESSAGE
+disallow-latest-tag               true        true         True    137m   Ready
+disallow-privileged-containers    true        true         True    137m   Ready
+require-resource-limits           true        true         True    137m   Ready
+require-run-as-non-root           true        true         True    137m   Ready
+verify-forseti-image-signatures   true        true         True    137m   Ready

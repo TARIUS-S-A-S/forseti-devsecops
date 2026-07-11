@@ -1,0 +1,26 @@
+=== forseti-staging ===
+NAME                                READY   STATUS    RESTARTS   AGE    IP            NODE              NOMINATED NODE   READINESS GATES
+forseti-backend-56f9847c9b-c824n    1/1     Running   0          98m    10.244.2.13   forseti-worker2   <none>           <none>
+forseti-frontend-587b757856-t2wwd   1/1     Running   0          105m   10.244.1.15   forseti-worker    <none>           <none>
+forseti-postgres-0                  1/1     Running   0          106m   10.244.1.14   forseti-worker    <none>           <none>
+
+=== argocd ===
+NAME                                                READY   STATUS    RESTARTS   AGE
+argocd-application-controller-0                     1/1     Running   0          143m
+argocd-applicationset-controller-7d4d7c7b89-spl98   1/1     Running   0          143m
+argocd-dex-server-cbddb9676-k9fnp                   1/1     Running   0          143m
+argocd-notifications-controller-7b55c64b69-9fl4n    1/1     Running   0          143m
+argocd-redis-68bc658cfb-m8gvj                       1/1     Running   0          143m
+argocd-repo-server-56c67cf674-p8f8z                 1/1     Running   0          143m
+argocd-server-66b7d96445-n668s                      1/1     Running   0          143m
+
+=== kyverno ===
+NAME                                             READY   STATUS    RESTARTS   AGE
+kyverno-admission-controller-f849f45fd-kg8s9     1/1     Running   0          138m
+kyverno-background-controller-5bd5c4465b-ts66z   1/1     Running   0          138m
+kyverno-cleanup-controller-847b887d6c-z2nbg      1/1     Running   0          138m
+kyverno-reports-controller-75bc4c4784-4pktc      1/1     Running   0          138m
+
+=== ingress-nginx ===
+NAME                                        READY   STATUS    RESTARTS   AGE
+ingress-nginx-controller-54754544b9-zzkzh   1/1     Running   0          150m

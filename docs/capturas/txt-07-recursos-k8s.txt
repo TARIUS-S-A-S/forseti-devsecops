@@ -1,0 +1,13 @@
+=== SERVICES ===
+NAME               TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+forseti-backend    ClusterIP   10.96.130.244   <none>        8080/TCP   139m
+forseti-frontend   ClusterIP   10.96.197.116   <none>        80/TCP     139m
+forseti-postgres   ClusterIP   10.96.169.126   <none>        5432/TCP   139m
+
+=== INGRESS ===
+NAME      CLASS   HOSTS                   ADDRESS     PORTS   AGE
+forseti   nginx   staging.forseti.local   localhost   80      139m
+
+=== PVC ===
+NAME                   STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
+forseti-postgres-pvc   Bound    pvc-0c4b645d-628c-4d93-b92e-49c048350e5a   2Gi        RWO            standard       <unset>                 106m

@@ -1,0 +1,5 @@
+NAMES                   IMAGE                   STATUS
+forseti-jenkins         forseti-jenkins:local   Up 2 hours
+forseti-control-plane   kindest/node:v1.36.1    Up 3 hours
+forseti-worker          kindest/node:v1.36.1    Up 3 hours
+forseti-worker2         kindest/node:v1.36.1    Up 3 hours
