@@ -1,0 +1,14 @@
+# OWASP ZAP baseline — reglas custom para Forseti
+# Formato: rule_id \t action \t opcional url
+# action: IGNORE | INFO | WARN | FAIL
+#
+# Ignoramos falsos positivos conocidos en ambientes de staging local (sin CDN, sin CSP full)
+
+10015	INFO	# Re-examine cache-control (staging local no tiene CDN)
+10027	INFO	# Suspicious comments
+10096	INFO	# Timestamp disclosure (Spring Boot expone /actuator)
+10021	WARN	# X-Content-Type-Options missing
+10038	WARN	# CSP header not set (WARN, no FAIL — Forseti setea CSP en prod real)
+10020	WARN	# X-Frame-Options
+10063	INFO	# Permissions-Policy
+90003	INFO	# Sub Resource Integrity

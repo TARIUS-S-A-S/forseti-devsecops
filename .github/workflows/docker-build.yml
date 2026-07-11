@@ -1,9 +1,12 @@
-name: Container Build + Trivy + Cosign
+name: CD prod (main) — Container Build + Trivy + Cosign
 
+# Solo se dispara en `main` — este es el pipeline CD "pesado" completo.
+# Para dev (staging) usar dev-deploy-staging.yml.
 on:
   push:
     branches: [main]
     tags: ['v*']
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io

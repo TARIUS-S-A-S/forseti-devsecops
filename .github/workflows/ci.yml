@@ -1,5 +1,9 @@
-name: CI — Build + Test
+name: CI (all branches + PR) — Build + Test
 
+# Corre SIEMPRE:
+#   - push a main o dev
+#   - PR contra main o dev (feature branches)
+# NO despliega nada. Solo verifica que el código compila y pasa los tests.
 on:
   push:
     branches: [main, dev]
